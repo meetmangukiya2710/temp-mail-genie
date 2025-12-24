@@ -3,11 +3,13 @@ import { Header } from '@/components/layout/Header';
 import { EmailDisplay } from '@/components/email/EmailDisplay';
 import { InboxList } from '@/components/email/InboxList';
 import { EmailDetail } from '@/components/email/EmailDetail';
+import { SplashScreen } from '@/components/SplashScreen';
 import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
 
 export default function Index() {
+  const [showSplash, setShowSplash] = useState(true);
   const {
     email,
     messages,
@@ -21,6 +23,11 @@ export default function Index() {
   } = useTempEmail();
 
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
+
+  // Show splash screen on initial load
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} minDuration={2200} />;
+  }
 
   if (!email) {
     return (
