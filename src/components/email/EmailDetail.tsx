@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, Shield, User, Clock } from 'lucide-react';
+import { ArrowLeft, Copy, Shield, User, Clock, File, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmailMessage } from '@/types/email';
@@ -9,9 +9,10 @@ import { useState } from 'react';
 interface EmailDetailProps {
   message: EmailMessage;
   onBack: () => void;
+  authToken?: string;
 }
 
-export function EmailDetail({ message, onBack }: EmailDetailProps) {
+export function EmailDetail({ message, onBack, authToken }: EmailDetailProps) {
   const [copied, setCopied] = useState(false);
 
   const copyContent = async () => {
@@ -31,7 +32,7 @@ export function EmailDetail({ message, onBack }: EmailDetailProps) {
       /\b(\d{4,8})\b/g, // 4-8 digit codes
       /\b([A-Z0-9]{6,8})\b/g, // Alphanumeric codes
     ];
-    
+
     const codes: string[] = [];
     patterns.forEach(pattern => {
       const matches = text.match(pattern);
@@ -39,7 +40,7 @@ export function EmailDetail({ message, onBack }: EmailDetailProps) {
         codes.push(...matches.slice(0, 3)); // Limit to 3 codes
       }
     });
-    
+
     return [...new Set(codes)]; // Remove duplicates
   };
 
@@ -52,6 +53,15 @@ export function EmailDetail({ message, onBack }: EmailDetailProps) {
     } catch {
       toast.error('Failed to copy code');
     }
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   return (
@@ -119,6 +129,42 @@ export function EmailDetail({ message, onBack }: EmailDetailProps) {
                 <Copy className="h-4 w-4 text-muted-foreground" />
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Attachments */}
+      {message.attachments && message.attachments.length > 0 && (
+        <div className="p-4 border-b bg-muted/20">
+          <p className="text-sm font-medium mb-3 flex items-center gap-2">
+            <File className="h-4 w-4" />
+            Attachments ({message.attachments.length})
+          </p>
+          <div className="space-y-2">
+            {message.attachments.map((attachment) => {
+              const isImage = attachment.contentType.startsWith('image/');
+
+              return (
+                <div
+                  key={attachment.id}
+                  className="flex items-center gap-3 p-3 bg-background rounded-lg border hover:border-primary/50 transition-colors"
+                >
+                  <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                    {isImage ? (
+                      <ImageIcon className="h-5 w-5 text-primary" />
+                    ) : (
+                      <File className="h-5 w-5 text-primary" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm">{attachment.filename}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatFileSize(attachment.size)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

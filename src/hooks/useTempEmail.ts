@@ -28,11 +28,19 @@ function convertMessage(msg: MailTmMessage | MailTmMessageFull): EmailMessage {
     html: fullMsg.html,
     createdAt: new Date(msg.createdAt),
     isOtp: isOtpEmail(msg.subject, msg.intro),
+    hasAttachments: msg.hasAttachments,
+    attachments: fullMsg.attachments?.map(att => ({
+      id: att.id,
+      filename: att.filename,
+      contentType: att.contentType,
+      size: att.size,
+      downloadUrl: att.downloadUrl,
+    })),
   };
 }
 
 // Create a new email account
-async function createNewAccount(): Promise<MailTmSession | null> {
+async function createNewAccount(selectedDomain?: string): Promise<MailTmSession | null> {
   try {
     // Get available domains
     const domains = await mailTmApi.getDomains();
@@ -40,7 +48,8 @@ async function createNewAccount(): Promise<MailTmSession | null> {
       throw new Error('No domains available');
     }
 
-    const domain = domains[0].domain;
+    // Use selected domain or first available
+    const domain = selectedDomain || domains[0].domain;
     const username = mailTmApi.generateUsername();
     const password = mailTmApi.generatePassword();
     const address = `${username}@${domain}`;
@@ -88,17 +97,33 @@ export function useTempEmail() {
   const [session, setSession] = useState<MailTmSession | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [initialized, setInitialized] = useState(false);
+  const [availableDomains, setAvailableDomains] = useState<string[]>([]);
+  const [selectedDomain, setSelectedDomain] = useState<string>('');
 
   // Initialize or restore session
   useEffect(() => {
     if (initialized) return;
-    
+
     let mounted = true;
 
     const init = async () => {
+      // Fetch available domains first
+      try {
+        const domains = await mailTmApi.getDomains();
+        const domainList = domains.map(d => d.domain);
+        if (mounted) {
+          setAvailableDomains(domainList);
+          if (domainList.length > 0 && !selectedDomain) {
+            setSelectedDomain(domainList[0]);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch domains:', err);
+      }
+
       // Try to restore session
       const stored = localStorage.getItem(STORAGE_KEY);
-      
+
       if (stored) {
         try {
           const parsed: MailTmSession = JSON.parse(stored);
@@ -137,7 +162,7 @@ export function useTempEmail() {
 
       // Create new account
       const newSession = await createNewAccount();
-      
+
       if (mounted) {
         if (newSession) {
           setSession(newSession);
@@ -189,8 +214,8 @@ export function useTempEmail() {
 
     localStorage.removeItem(STORAGE_KEY);
 
-    const newSession = await createNewAccount();
-    
+    const newSession = await createNewAccount(selectedDomain);
+
     if (newSession) {
       setSession(newSession);
       setEmail(sessionToEmail(newSession));
@@ -202,18 +227,18 @@ export function useTempEmail() {
       setIsLoading(false);
       toast.error('Failed to generate new email');
     }
-  }, [session]);
+  }, [session, selectedDomain]);
 
   // Refresh inbox (manual)
   const refreshInbox = useCallback(async () => {
     if (!session) return;
-    
+
     setIsLoading(true);
     setError(null);
 
     try {
       const mailTmMessages = await mailTmApi.getMessages(session.token);
-      
+
       // Get full content for each message
       const messagesWithContent = await Promise.all(
         mailTmMessages.map(async (msg) => {
@@ -226,14 +251,19 @@ export function useTempEmail() {
         })
       );
 
-      // Sort by date, newest first
-      messagesWithContent.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      // Deduplicate messages by ID to prevent double showing
+      const uniqueMessages = Array.from(
+        new Map(messagesWithContent.map(m => [m.id, m])).values()
+      );
 
-      const newCount = messagesWithContent.filter(m => 
+      // Sort by date, newest first
+      uniqueMessages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      const newCount = uniqueMessages.filter(m =>
         !messages.find(om => om.id === m.id)
       ).length;
 
-      setMessages(messagesWithContent);
+      setMessages(uniqueMessages);
       setIsLoading(false);
 
       if (newCount > 0) {
@@ -276,5 +306,9 @@ export function useTempEmail() {
     refreshInbox,
     copyEmail,
     isExpired: timeLeft <= 0,
+    availableDomains,
+    selectedDomain,
+    setSelectedDomain,
+    authToken: session?.token,
   };
 }

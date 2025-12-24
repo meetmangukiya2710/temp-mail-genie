@@ -6,6 +6,7 @@ import { EmailDetail } from '@/components/email/EmailDetail';
 import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
+import { AppAd } from '@/components/ads/AppAd';
 
 export default function Index() {
   const {
@@ -18,6 +19,10 @@ export default function Index() {
     generateNewEmail,
     refreshInbox,
     copyEmail,
+    availableDomains,
+    selectedDomain,
+    setSelectedDomain,
+    authToken,
   } = useTempEmail();
 
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
@@ -54,9 +59,12 @@ export default function Index() {
   return (
     <div className="min-h-screen gradient-hero">
       <Header />
-      
-      <main className="container py-6 sm:py-10">
-        <div className="max-w-2xl mx-auto">
+
+      <div className="flex justify-center items-start gap-6 px-4 py-6 sm:py-10">
+        {/* Left Sidebar Ad */}
+        <AppAd type="sidebar-left" />
+
+        <main className="flex-1 max-w-2xl min-w-0">
           {/* Hero section */}
           <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">
@@ -64,10 +72,13 @@ export default function Index() {
               <span className="text-gradient">OTP & Spam</span>
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Get instant disposable email addresses. No signup required. 
+              Get instant disposable email addresses. No signup required.
               Protect your privacy from spam and unwanted emails.
             </p>
           </div>
+
+          {/* Inline Ad 1 */}
+          <AppAd type="inline" />
 
           {/* Email display */}
           <div className="mb-6">
@@ -78,14 +89,21 @@ export default function Index() {
               onCopy={copyEmail}
               onGenerate={generateNewEmail}
               isLoading={isLoading}
+              availableDomains={availableDomains}
+              selectedDomain={selectedDomain}
+              onDomainChange={setSelectedDomain}
             />
           </div>
+
+          {/* Inline Ad 2 */}
+          <AppAd type="inline" />
 
           {/* Inbox or Email Detail */}
           {selectedMessage ? (
             <EmailDetail
               message={selectedMessage}
               onBack={() => setSelectedMessage(null)}
+              authToken={authToken}
             />
           ) : (
             <InboxList
@@ -96,6 +114,8 @@ export default function Index() {
               selectedId={selectedMessage?.id}
             />
           )}
+
+          <AppAd type="inline" />
 
           {/* Features */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -117,13 +137,22 @@ export default function Index() {
               </div>
             ))}
           </div>
-        </div>
-      </main>
+
+          {/* Inline Ad 3 */}
+          <AppAd type="inline" />
+        </main>
+
+        {/* Right Sidebar Ad */}
+        <AppAd type="sidebar-right" />
+      </div>
+
+      {/* Persistent Banner Ad (Web Only) */}
+      <AppAd type="banner" />
 
       {/* Footer */}
       <footer className="border-t mt-auto">
         <div className="container py-6 text-center text-sm text-muted-foreground">
-          <p>© 2024 TempMail. No data is stored permanently.</p>
+          <p>© 2024 Temp Mail OneTap. No data is stored permanently.</p>
         </div>
       </footer>
     </div>

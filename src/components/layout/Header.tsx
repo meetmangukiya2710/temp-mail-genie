@@ -8,13 +8,13 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 glass border-b">
+    <header className="sticky top-0 z-50 glass border-b pt-2 sm:pt-0">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary shadow-soft transition-transform group-hover:scale-105">
             <Mail className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">TempMail</span>
+          <span className="text-lg font-semibold tracking-tight">Temp Mail OneTap</span>
         </Link>
 
         <nav className="flex items-center gap-1">
@@ -30,7 +30,7 @@ export function Header() {
               <Moon className="h-5 w-5" />
             )}
           </Button>
-          
+
           <Button
             variant={location.pathname === '/settings' ? 'secondary' : 'ghost'}
             size="icon"

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { DomainSelector } from './DomainSelector';
 
 interface EmailDisplayProps {
   email: string;
@@ -12,6 +13,9 @@ interface EmailDisplayProps {
   onCopy: () => Promise<boolean>;
   onGenerate: () => void;
   isLoading?: boolean;
+  availableDomains?: string[];
+  selectedDomain?: string;
+  onDomainChange?: (domain: string) => void;
 }
 
 export function EmailDisplay({
@@ -21,6 +25,9 @@ export function EmailDisplay({
   onCopy,
   onGenerate,
   isLoading,
+  availableDomains = [],
+  selectedDomain = '',
+  onDomainChange,
 }: EmailDisplayProps) {
   const [copied, setCopied] = useState(false);
 
@@ -42,7 +49,7 @@ export function EmailDisplay({
         <div className="flex items-center justify-center gap-2 mb-6">
           <div className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium",
-            isExpired 
+            isExpired
               ? "bg-destructive/10 text-destructive"
               : "bg-accent text-accent-foreground"
           )}>
@@ -63,10 +70,20 @@ export function EmailDisplay({
 
         {/* Email address */}
         <div className="space-y-4">
+          {/* Domain Selector */}
+          {availableDomains.length > 0 && onDomainChange && (
+            <DomainSelector
+              domains={availableDomains}
+              selectedDomain={selectedDomain}
+              onDomainChange={onDomainChange}
+              disabled={isLoading}
+            />
+          )}
+
           <p className="text-center text-sm text-muted-foreground">
             Your temporary email address
           </p>
-          
+
           <div className="relative group">
             <div className={cn(
               "flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-dashed transition-all duration-200",
@@ -97,7 +114,7 @@ export function EmailDisplay({
           <Button
             onClick={handleCopy}
             size="lg"
-            className="flex-1"
+            className="flex-1 h-[50px]"
             disabled={isLoading}
           >
             {copied ? (
@@ -112,12 +129,12 @@ export function EmailDisplay({
               </>
             )}
           </Button>
-          
+
           <Button
             onClick={onGenerate}
             variant="outline"
             size="lg"
-            className="flex-1"
+            className="flex-1 h-[50px]"
             disabled={isLoading}
           >
             <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />

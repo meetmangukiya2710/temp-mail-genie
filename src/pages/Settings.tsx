@@ -2,16 +2,17 @@ import { Header } from '@/components/layout/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Shield, 
-  FileText, 
-  Moon, 
-  Bell, 
+import {
+  Shield,
+  FileText,
+  Moon,
+  Bell,
   ExternalLink,
   Info,
   Heart
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { AppAd } from '@/components/ads/AppAd';
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
@@ -19,10 +20,13 @@ export default function Settings() {
   return (
     <div className="min-h-screen gradient-hero">
       <Header />
-      
+
       <main className="container py-6 sm:py-10">
         <div className="max-w-lg mx-auto">
           <h1 className="text-2xl font-bold mb-6 animate-fade-in">Settings</h1>
+
+          <AppAd type="inline" />
+
 
           <div className="space-y-4 stagger-children">
             {/* Appearance */}
@@ -41,13 +45,15 @@ export default function Settings() {
                       Switch between light and dark themes
                     </p>
                   </div>
-                  <Switch 
-                    checked={theme === 'dark'} 
+                  <Switch
+                    checked={theme === 'dark'}
                     onCheckedChange={toggleTheme}
                   />
                 </div>
               </CardContent>
             </Card>
+
+            <AppAd type="inline" />
 
             {/* Notifications */}
             <Card>
@@ -73,6 +79,8 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            <AppAd type="inline" />
+
             {/* Legal */}
             <Card>
               <CardHeader className="pb-3">
@@ -92,6 +100,8 @@ export default function Settings() {
                 </Button>
               </CardContent>
             </Card>
+
+            <AppAd type="inline" />
 
             {/* Privacy Info */}
             <Card>
@@ -123,6 +133,8 @@ export default function Settings() {
               </CardContent>
             </Card>
 
+            <AppAd type="inline" />
+
             {/* About */}
             <Card>
               <CardHeader className="pb-3">
@@ -132,10 +144,6 @@ export default function Settings() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Version</span>
-                  <span className="font-mono">1.0.0</span>
-                </div>
                 <div className="mt-4 pt-4 border-t text-center">
                   <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
                     Made with <Heart className="h-4 w-4 text-destructive" /> for privacy
@@ -144,8 +152,12 @@ export default function Settings() {
               </CardContent>
             </Card>
           </div>
+
+          <AppAd type="inline" />
         </div>
       </main>
+
+      <AppAd type="banner" />
     </div>
   );
 }

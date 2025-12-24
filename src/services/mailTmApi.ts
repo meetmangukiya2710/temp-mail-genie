@@ -46,9 +46,21 @@ export interface MailTmMessage {
   updatedAt: string;
 }
 
+export interface MailTmAttachment {
+  id: string;
+  filename: string;
+  contentType: string;
+  disposition: string;
+  transferEncoding: string;
+  related: boolean;
+  size: number;
+  downloadUrl: string;
+}
+
 export interface MailTmMessageFull extends MailTmMessage {
   text?: string;
   html?: string[];
+  attachments?: MailTmAttachment[];
 }
 
 export interface MailTmSession {

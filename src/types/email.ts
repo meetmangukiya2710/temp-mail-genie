@@ -17,6 +17,14 @@ export interface EmailMessage {
   html?: string[];
   createdAt: Date;
   isOtp?: boolean;
+  hasAttachments?: boolean;
+  attachments?: Array<{
+    id: string;
+    filename: string;
+    contentType: string;
+    size: number;
+    downloadUrl: string;
+  }>;
 }
 
 export interface InboxState {
