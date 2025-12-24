@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TempEmail, EmailMessage, InboxState } from '@/types/email';
 import { mailTmApi, MailTmSession, MailTmMessage, MailTmMessageFull } from '@/services/mailTmApi';
 import { toast } from 'sonner';
@@ -31,66 +31,71 @@ function convertMessage(msg: MailTmMessage | MailTmMessageFull): EmailMessage {
   };
 }
 
-export function useTempEmail() {
-  const [state, setState] = useState<InboxState>({
-    email: null,
-    messages: [],
-    isLoading: true,
-    error: null,
-  });
+// Create a new email account
+async function createNewAccount(): Promise<MailTmSession | null> {
+  try {
+    // Get available domains
+    const domains = await mailTmApi.getDomains();
+    if (!domains.length) {
+      throw new Error('No domains available');
+    }
 
+    const domain = domains[0].domain;
+    const username = mailTmApi.generateUsername();
+    const password = mailTmApi.generatePassword();
+    const address = `${username}@${domain}`;
+
+    // Create account
+    const account = await mailTmApi.createAccount(address, password);
+
+    // Get auth token
+    const { token } = await mailTmApi.getToken(address, password);
+
+    const now = new Date();
+    const newSession: MailTmSession = {
+      accountId: account.id,
+      address,
+      password,
+      token,
+      createdAt: now,
+      expiresAt: new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000),
+    };
+
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
+
+    return newSession;
+  } catch (error) {
+    console.error('Failed to create account:', error);
+    return null;
+  }
+}
+
+function sessionToEmail(session: MailTmSession): TempEmail {
+  return {
+    id: session.accountId,
+    address: session.address,
+    createdAt: session.createdAt,
+    expiresAt: session.expiresAt,
+  };
+}
+
+export function useTempEmail() {
+  const [email, setEmail] = useState<TempEmail | null>(null);
+  const [messages, setMessages] = useState<EmailMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<MailTmSession | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
-  const initRef = useRef(false);
-
-  // Create a new email account
-  const createNewAccount = useCallback(async (): Promise<MailTmSession | null> => {
-    try {
-      // Get available domains
-      const domains = await mailTmApi.getDomains();
-      if (!domains.length) {
-        throw new Error('No domains available');
-      }
-
-      const domain = domains[0].domain;
-      const username = mailTmApi.generateUsername();
-      const password = mailTmApi.generatePassword();
-      const address = `${username}@${domain}`;
-
-      // Create account
-      const account = await mailTmApi.createAccount(address, password);
-
-      // Get auth token
-      const { token } = await mailTmApi.getToken(address, password);
-
-      const now = new Date();
-      const newSession: MailTmSession = {
-        accountId: account.id,
-        address,
-        password,
-        token,
-        createdAt: now,
-        expiresAt: new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000),
-      };
-
-      // Save to localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
-
-      return newSession;
-    } catch (error) {
-      console.error('Failed to create account:', error);
-      return null;
-    }
-  }, []);
+  const [initialized, setInitialized] = useState(false);
 
   // Initialize or restore session
   useEffect(() => {
-    if (initRef.current) return;
-    initRef.current = true;
+    if (initialized) return;
+    
+    let mounted = true;
 
     const init = async () => {
-      setState(prev => ({ ...prev, isLoading: true }));
-
       // Try to restore session
       const stored = localStorage.getItem(STORAGE_KEY);
       
@@ -113,18 +118,12 @@ export function useTempEmail() {
             // Verify token still works
             try {
               await mailTmApi.getMe(parsed.token);
-              setSession(parsed);
-              setState({
-                email: {
-                  id: parsed.accountId,
-                  address: parsed.address,
-                  createdAt: parsed.createdAt,
-                  expiresAt: parsed.expiresAt,
-                },
-                messages: [],
-                isLoading: false,
-                error: null,
-              });
+              if (mounted) {
+                setSession(parsed);
+                setEmail(sessionToEmail(parsed));
+                setIsLoading(false);
+                setInitialized(true);
+              }
               return;
             } catch {
               // Token invalid, create new account
@@ -139,55 +138,45 @@ export function useTempEmail() {
       // Create new account
       const newSession = await createNewAccount();
       
-      if (newSession) {
-        setSession(newSession);
-        setState({
-          email: {
-            id: newSession.accountId,
-            address: newSession.address,
-            createdAt: newSession.createdAt,
-            expiresAt: newSession.expiresAt,
-          },
-          messages: [],
-          isLoading: false,
-          error: null,
-        });
-      } else {
-        setState({
-          email: null,
-          messages: [],
-          isLoading: false,
-          error: 'Failed to create email. Please try again.',
-        });
+      if (mounted) {
+        if (newSession) {
+          setSession(newSession);
+          setEmail(sessionToEmail(newSession));
+          setIsLoading(false);
+        } else {
+          setError('Failed to create email. Please try again.');
+          setIsLoading(false);
+        }
+        setInitialized(true);
       }
     };
 
     init();
-  }, [createNewAccount]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [initialized]);
 
   // Update countdown timer
   useEffect(() => {
-    if (!state.email) return;
+    if (!email) return;
 
     const updateTimer = () => {
       const now = new Date();
-      const remaining = Math.max(0, state.email!.expiresAt.getTime() - now.getTime());
+      const remaining = Math.max(0, email.expiresAt.getTime() - now.getTime());
       setTimeLeft(Math.floor(remaining / 1000));
-
-      if (remaining <= 0) {
-        // Auto-expire - create new account
-        generateNewEmail();
-      }
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [state.email]);
+  }, [email]);
 
   // Generate new email
   const generateNewEmail = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setIsLoading(true);
+    setError(null);
 
     // Delete old account if exists
     if (session) {
@@ -204,33 +193,23 @@ export function useTempEmail() {
     
     if (newSession) {
       setSession(newSession);
-      setState({
-        email: {
-          id: newSession.accountId,
-          address: newSession.address,
-          createdAt: newSession.createdAt,
-          expiresAt: newSession.expiresAt,
-        },
-        messages: [],
-        isLoading: false,
-        error: null,
-      });
+      setEmail(sessionToEmail(newSession));
+      setMessages([]);
+      setIsLoading(false);
       toast.success('New email address generated!');
     } else {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: 'Failed to create email. Please try again.',
-      }));
+      setError('Failed to create email. Please try again.');
+      setIsLoading(false);
       toast.error('Failed to generate new email');
     }
-  }, [session, createNewAccount]);
+  }, [session]);
 
   // Refresh inbox (manual)
   const refreshInbox = useCallback(async () => {
     if (!session) return;
     
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
+    setIsLoading(true);
+    setError(null);
 
     try {
       const mailTmMessages = await mailTmApi.getMessages(session.token);
@@ -250,51 +229,47 @@ export function useTempEmail() {
       // Sort by date, newest first
       messagesWithContent.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-      setState(prev => ({
-        ...prev,
-        messages: messagesWithContent,
-        isLoading: false,
-      }));
+      const newCount = messagesWithContent.filter(m => 
+        !messages.find(om => om.id === m.id)
+      ).length;
 
-      if (messagesWithContent.length > 0) {
-        const newCount = messagesWithContent.filter(m => 
-          !state.messages.find(om => om.id === m.id)
-        ).length;
-        if (newCount > 0) {
-          toast.success(`${newCount} new message${newCount > 1 ? 's' : ''} received!`);
-        }
+      setMessages(messagesWithContent);
+      setIsLoading(false);
+
+      if (newCount > 0) {
+        toast.success(`${newCount} new message${newCount > 1 ? 's' : ''} received!`);
       }
-    } catch (error) {
-      console.error('Failed to fetch messages:', error);
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: 'Failed to fetch messages',
-      }));
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+      setError('Failed to fetch messages');
+      setIsLoading(false);
       toast.error('Failed to refresh inbox');
     }
-  }, [session, state.messages]);
+  }, [session, messages]);
 
   // Copy email to clipboard
   const copyEmail = useCallback(async () => {
-    if (!state.email) return false;
+    if (!email) return false;
     try {
-      await navigator.clipboard.writeText(state.email.address);
+      await navigator.clipboard.writeText(email.address);
       return true;
     } catch {
       return false;
     }
-  }, [state.email]);
+  }, [email]);
 
   // Format time remaining
-  const formatTimeLeft = useCallback((seconds: number): string => {
+  const formatTimeLeft = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  }, []);
+  };
 
   return {
-    ...state,
+    email,
+    messages,
+    isLoading,
+    error,
     timeLeft,
     formattedTimeLeft: formatTimeLeft(timeLeft),
     generateNewEmail,
