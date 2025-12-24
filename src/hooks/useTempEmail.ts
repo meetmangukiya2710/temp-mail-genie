@@ -1,72 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { TempEmail, EmailMessage, InboxState } from '@/types/email';
+import { mailTmApi, MailTmSession, MailTmMessage, MailTmMessageFull } from '@/services/mailTmApi';
+import { toast } from 'sonner';
 
 const EMAIL_LIFETIME_MINUTES = 30;
-const STORAGE_KEY = 'tempmail-session';
-
-// Generate random string for email
-function generateRandomString(length: number = 10): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-}
+const STORAGE_KEY = 'tempmail-session-v2';
 
 // Check if text contains OTP-like patterns
 function isOtpEmail(subject: string, text?: string): boolean {
-  const otpKeywords = ['otp', 'code', 'verification', 'verify', 'confirm', 'pin', 'token', 'password', 'login'];
+  const otpKeywords = ['otp', 'code', 'verification', 'verify', 'confirm', 'pin', 'token', 'password', 'login', 'authenticate', '2fa', 'two-factor'];
   const combined = `${subject} ${text || ''}`.toLowerCase();
   return otpKeywords.some(keyword => combined.includes(keyword));
 }
 
-// Mock email generation for demo purposes
-// In production, integrate with mail.tm or similar API
-function createMockEmail(): TempEmail {
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000);
-  
+// Convert mail.tm message to our format
+function convertMessage(msg: MailTmMessage | MailTmMessageFull): EmailMessage {
+  const fullMsg = msg as MailTmMessageFull;
   return {
-    id: generateRandomString(20),
-    address: `${generateRandomString(12)}@tempmail.dev`,
-    createdAt: now,
-    expiresAt,
+    id: msg.id,
+    from: {
+      address: msg.from.address,
+      name: msg.from.name || undefined,
+    },
+    subject: msg.subject,
+    intro: msg.intro,
+    text: fullMsg.text,
+    html: fullMsg.html,
+    createdAt: new Date(msg.createdAt),
+    isOtp: isOtpEmail(msg.subject, msg.intro),
   };
-}
-
-// Generate mock messages for demo
-function generateMockMessages(): EmailMessage[] {
-  const messages: EmailMessage[] = [
-    {
-      id: '1',
-      from: { address: 'noreply@example.com', name: 'Example Service' },
-      subject: 'Your verification code is 847293',
-      intro: 'Use this code to verify your account.',
-      text: 'Your verification code is: 847293. This code will expire in 10 minutes.',
-      createdAt: new Date(Date.now() - 5 * 60 * 1000),
-      isOtp: true,
-    },
-    {
-      id: '2',
-      from: { address: 'welcome@newsletter.com', name: 'Newsletter' },
-      subject: 'Welcome to our newsletter!',
-      intro: 'Thank you for subscribing to our newsletter.',
-      text: 'You will now receive our latest updates and news directly in your inbox.',
-      createdAt: new Date(Date.now() - 15 * 60 * 1000),
-      isOtp: false,
-    },
-    {
-      id: '3',
-      from: { address: 'security@app.io', name: 'App Security' },
-      subject: 'Login OTP: 159734',
-      intro: 'Your one-time password for login.',
-      text: 'Your OTP for logging in is 159734. Do not share this code with anyone.',
-      createdAt: new Date(Date.now() - 2 * 60 * 1000),
-      isOtp: true,
-    },
-  ];
-
-  return messages.map(msg => ({
-    ...msg,
-    isOtp: isOtpEmail(msg.subject, msg.text),
-  }));
 }
 
 export function useTempEmail() {
@@ -77,45 +39,131 @@ export function useTempEmail() {
     error: null,
   });
 
+  const [session, setSession] = useState<MailTmSession | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0);
+  const initRef = useRef(false);
 
-  // Load or create email on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        const email: TempEmail = {
-          ...parsed.email,
-          createdAt: new Date(parsed.email.createdAt),
-          expiresAt: new Date(parsed.email.expiresAt),
-        };
-        
-        // Check if expired
-        if (new Date() >= email.expiresAt) {
-          localStorage.removeItem(STORAGE_KEY);
-          const newEmail = createMockEmail();
-          setState({ email: newEmail, messages: [], isLoading: false, error: null });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: newEmail, messages: [] }));
-        } else {
-          const messages = parsed.messages.map((m: EmailMessage) => ({
-            ...m,
-            createdAt: new Date(m.createdAt),
-          }));
-          setState({ email, messages, isLoading: false, error: null });
-        }
-      } catch {
-        const newEmail = createMockEmail();
-        setState({ email: newEmail, messages: [], isLoading: false, error: null });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: newEmail, messages: [] }));
+  // Create a new email account
+  const createNewAccount = useCallback(async (): Promise<MailTmSession | null> => {
+    try {
+      // Get available domains
+      const domains = await mailTmApi.getDomains();
+      if (!domains.length) {
+        throw new Error('No domains available');
       }
-    } else {
-      const newEmail = createMockEmail();
-      setState({ email: newEmail, messages: [], isLoading: false, error: null });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: newEmail, messages: [] }));
+
+      const domain = domains[0].domain;
+      const username = mailTmApi.generateUsername();
+      const password = mailTmApi.generatePassword();
+      const address = `${username}@${domain}`;
+
+      // Create account
+      const account = await mailTmApi.createAccount(address, password);
+
+      // Get auth token
+      const { token } = await mailTmApi.getToken(address, password);
+
+      const now = new Date();
+      const newSession: MailTmSession = {
+        accountId: account.id,
+        address,
+        password,
+        token,
+        createdAt: now,
+        expiresAt: new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000),
+      };
+
+      // Save to localStorage
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
+
+      return newSession;
+    } catch (error) {
+      console.error('Failed to create account:', error);
+      return null;
     }
   }, []);
+
+  // Initialize or restore session
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+
+    const init = async () => {
+      setState(prev => ({ ...prev, isLoading: true }));
+
+      // Try to restore session
+      const stored = localStorage.getItem(STORAGE_KEY);
+      
+      if (stored) {
+        try {
+          const parsed: MailTmSession = JSON.parse(stored);
+          parsed.createdAt = new Date(parsed.createdAt);
+          parsed.expiresAt = new Date(parsed.expiresAt);
+
+          // Check if expired
+          if (new Date() >= parsed.expiresAt) {
+            // Try to delete old account (best effort)
+            try {
+              await mailTmApi.deleteAccount(parsed.token, parsed.accountId);
+            } catch {
+              // Ignore errors
+            }
+            localStorage.removeItem(STORAGE_KEY);
+          } else {
+            // Verify token still works
+            try {
+              await mailTmApi.getMe(parsed.token);
+              setSession(parsed);
+              setState({
+                email: {
+                  id: parsed.accountId,
+                  address: parsed.address,
+                  createdAt: parsed.createdAt,
+                  expiresAt: parsed.expiresAt,
+                },
+                messages: [],
+                isLoading: false,
+                error: null,
+              });
+              return;
+            } catch {
+              // Token invalid, create new account
+              localStorage.removeItem(STORAGE_KEY);
+            }
+          }
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+
+      // Create new account
+      const newSession = await createNewAccount();
+      
+      if (newSession) {
+        setSession(newSession);
+        setState({
+          email: {
+            id: newSession.accountId,
+            address: newSession.address,
+            createdAt: newSession.createdAt,
+            expiresAt: newSession.expiresAt,
+          },
+          messages: [],
+          isLoading: false,
+          error: null,
+        });
+      } else {
+        setState({
+          email: null,
+          messages: [],
+          isLoading: false,
+          error: 'Failed to create email. Please try again.',
+        });
+      }
+    };
+
+    init();
+  }, [createNewAccount]);
 
   // Update countdown timer
   useEffect(() => {
@@ -127,11 +175,8 @@ export function useTempEmail() {
       setTimeLeft(Math.floor(remaining / 1000));
 
       if (remaining <= 0) {
-        // Auto-expire
-        localStorage.removeItem(STORAGE_KEY);
-        const newEmail = createMockEmail();
-        setState({ email: newEmail, messages: [], isLoading: false, error: null });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: newEmail, messages: [] }));
+        // Auto-expire - create new account
+        generateNewEmail();
       }
     };
 
@@ -141,32 +186,94 @@ export function useTempEmail() {
   }, [state.email]);
 
   // Generate new email
-  const generateNewEmail = useCallback(() => {
+  const generateNewEmail = useCallback(async () => {
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
+
+    // Delete old account if exists
+    if (session) {
+      try {
+        await mailTmApi.deleteAccount(session.token, session.accountId);
+      } catch {
+        // Ignore errors
+      }
+    }
+
     localStorage.removeItem(STORAGE_KEY);
-    const newEmail = createMockEmail();
-    setState({ email: newEmail, messages: [], isLoading: false, error: null });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: newEmail, messages: [] }));
-  }, []);
+
+    const newSession = await createNewAccount();
+    
+    if (newSession) {
+      setSession(newSession);
+      setState({
+        email: {
+          id: newSession.accountId,
+          address: newSession.address,
+          createdAt: newSession.createdAt,
+          expiresAt: newSession.expiresAt,
+        },
+        messages: [],
+        isLoading: false,
+        error: null,
+      });
+      toast.success('New email address generated!');
+    } else {
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to create email. Please try again.',
+      }));
+      toast.error('Failed to generate new email');
+    }
+  }, [session, createNewAccount]);
 
   // Refresh inbox (manual)
   const refreshInbox = useCallback(async () => {
-    if (!state.email) return;
+    if (!session) return;
     
     setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In production, fetch from mail.tm API
-    // For demo, add mock messages
-    const mockMessages = generateMockMessages();
-    
-    setState(prev => {
-      const updated = { ...prev, messages: mockMessages, isLoading: false };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ email: prev.email, messages: mockMessages }));
-      return updated;
-    });
-  }, [state.email]);
+
+    try {
+      const mailTmMessages = await mailTmApi.getMessages(session.token);
+      
+      // Get full content for each message
+      const messagesWithContent = await Promise.all(
+        mailTmMessages.map(async (msg) => {
+          try {
+            const fullMsg = await mailTmApi.getMessage(session.token, msg.id);
+            return convertMessage(fullMsg);
+          } catch {
+            return convertMessage(msg);
+          }
+        })
+      );
+
+      // Sort by date, newest first
+      messagesWithContent.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      setState(prev => ({
+        ...prev,
+        messages: messagesWithContent,
+        isLoading: false,
+      }));
+
+      if (messagesWithContent.length > 0) {
+        const newCount = messagesWithContent.filter(m => 
+          !state.messages.find(om => om.id === m.id)
+        ).length;
+        if (newCount > 0) {
+          toast.success(`${newCount} new message${newCount > 1 ? 's' : ''} received!`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to fetch messages',
+      }));
+      toast.error('Failed to refresh inbox');
+    }
+  }, [session, state.messages]);
 
   // Copy email to clipboard
   const copyEmail = useCallback(async () => {
