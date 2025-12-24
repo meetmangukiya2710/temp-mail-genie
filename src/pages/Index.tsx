@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { EmailDisplay } from '@/components/email/EmailDisplay';
 import { InboxList } from '@/components/email/InboxList';
@@ -10,11 +10,13 @@ import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
 
 export default function Index() {
   const [showSplash, setShowSplash] = useState(true);
+  const [splashMinTimeElapsed, setSplashMinTimeElapsed] = useState(false);
+  
   const {
     email,
     messages,
     isLoading,
-    timeLeft,
+    error,
     formattedTimeLeft,
     isExpired,
     generateNewEmail,
@@ -24,15 +26,48 @@ export default function Index() {
 
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
 
-  // Show splash screen on initial load
+  // Hide splash when both minimum time has elapsed AND email is ready (or error)
+  useEffect(() => {
+    if (splashMinTimeElapsed && (email || error)) {
+      setShowSplash(false);
+    }
+  }, [splashMinTimeElapsed, email, error]);
+
+  // Show splash screen while loading
   if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} minDuration={2200} />;
+    return (
+      <SplashScreen 
+        onComplete={() => setSplashMinTimeElapsed(true)} 
+        minDuration={5000} 
+      />
+    );
   }
 
+  // Show error state if email creation failed
+  if (error && !email) {
+    return (
+      <div className="min-h-screen gradient-hero flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <p className="text-destructive font-medium">{error}</p>
+          <button
+            onClick={generateNewEmail}
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading if email not ready yet (shouldn't happen normally)
   if (!email) {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        <div className="text-center space-y-4">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground">Creating your email...</p>
+        </div>
       </div>
     );
   }

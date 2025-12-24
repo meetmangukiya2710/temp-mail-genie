@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -7,32 +7,35 @@ interface SplashScreenProps {
   minDuration?: number;
 }
 
-export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenProps) {
-  const [phase, setPhase] = useState<'logo' | 'text' | 'exit'>('logo');
+export function SplashScreen({ onComplete, minDuration = 2500 }: SplashScreenProps) {
+  const [phase, setPhase] = useState<'logo' | 'text' | 'loading'>('logo');
+  const calledRef = useRef(false);
 
   useEffect(() => {
     // Phase 1: Logo animation
     const textTimer = setTimeout(() => setPhase('text'), 400);
     
-    // Phase 2: Exit animation
-    const exitTimer = setTimeout(() => setPhase('exit'), minDuration - 400);
+    // Phase 2: Show loading state
+    const loadingTimer = setTimeout(() => setPhase('loading'), 800);
     
-    // Complete
-    const completeTimer = setTimeout(onComplete, minDuration);
+    // Complete after minimum duration
+    const completeTimer = setTimeout(() => {
+      if (!calledRef.current) {
+        calledRef.current = true;
+        onComplete();
+      }
+    }, minDuration);
 
     return () => {
       clearTimeout(textTimer);
-      clearTimeout(exitTimer);
+      clearTimeout(loadingTimer);
       clearTimeout(completeTimer);
     };
   }, [onComplete, minDuration]);
 
   return (
     <div
-      className={cn(
-        "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background transition-all duration-500",
-        phase === 'exit' && "opacity-0 scale-105"
-      )}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background"
     >
       {/* Animated background gradient */}
       <div className="absolute inset-0 overflow-hidden">
@@ -65,9 +68,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
         <div
           className={cn(
             "flex flex-col items-center gap-2 transition-all duration-500 delay-200",
-            phase === 'text' || phase === 'exit' 
-              ? "opacity-100 translate-y-0" 
-              : "opacity-0 translate-y-4"
+            phase !== 'logo' ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           )}
         >
           <h1 className="text-3xl font-bold tracking-tight">
@@ -82,9 +83,7 @@ export function SplashScreen({ onComplete, minDuration = 2000 }: SplashScreenPro
         <div
           className={cn(
             "flex gap-1.5 transition-all duration-500 delay-300",
-            phase === 'text' || phase === 'exit'
-              ? "opacity-100"
-              : "opacity-0"
+            phase !== 'logo' ? "opacity-100" : "opacity-0"
           )}
         >
           {[0, 1, 2].map((i) => (
