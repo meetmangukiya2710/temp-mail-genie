@@ -1,17 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { EmailDisplay } from '@/components/email/EmailDisplay';
 import { InboxList } from '@/components/email/InboxList';
 import { EmailDetail } from '@/components/email/EmailDetail';
-import { SplashScreen } from '@/components/SplashScreen';
 import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
 
 export default function Index() {
-  const [showSplash, setShowSplash] = useState(true);
-  const [splashMinTimeElapsed, setSplashMinTimeElapsed] = useState(false);
-  
   const {
     email,
     messages,
@@ -25,23 +21,6 @@ export default function Index() {
   } = useTempEmail();
 
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
-
-  // Hide splash when both minimum time has elapsed AND email is ready (or error)
-  useEffect(() => {
-    if (splashMinTimeElapsed && (email || error)) {
-      setShowSplash(false);
-    }
-  }, [splashMinTimeElapsed, email, error]);
-
-  // Show splash screen while loading
-  if (showSplash) {
-    return (
-      <SplashScreen 
-        onComplete={() => setSplashMinTimeElapsed(true)} 
-        minDuration={5000} 
-      />
-    );
-  }
 
   // Show error state if email creation failed
   if (error && !email) {
@@ -60,7 +39,7 @@ export default function Index() {
     );
   }
 
-  // Show loading if email not ready yet (shouldn't happen normally)
+  // Show loading if email not ready yet
   if (!email) {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
