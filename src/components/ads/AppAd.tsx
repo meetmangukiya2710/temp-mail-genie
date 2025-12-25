@@ -11,10 +11,13 @@ const ADSENSE_SLOT = '6428174874';
 export function AppAd({ type }: AppAdProps) {
     const isNative = Capacitor.isNativePlatform();
 
-    // Sidebars and bottom banner are only for web (desktop view)
+    // On native mobile, we only show ads if you have AdMob set up. 
+    // Since we are doing AdSense for web right now:
+    if (isNative && type !== 'inline') return null;
+
     if (type === 'sidebar-left' || type === 'sidebar-right') {
         return (
-            <div className="hidden lg:block w-[160px] min-w-[160px] h-[600px] min-h-[600px] sticky top-20 bg-card/50 border rounded-xl overflow-hidden shadow-soft">
+            <div className="hidden lg:block w-[160px] min-w-[160px] h-[600px] min-h-[600px] sticky top-20 overflow-hidden">
                 <AdSenseAd
                     client={ADSENSE_CLIENT}
                     slot={ADSENSE_SLOT}
@@ -26,10 +29,9 @@ export function AppAd({ type }: AppAdProps) {
     }
 
     if (type === 'banner') {
-        // Bottom wide ad - visible on both web and native
         return (
-            <div className="flex justify-center w-full py-4 mt-auto border-t bg-card/50">
-                <div className="max-w-4xl w-full px-4">
+            <div className="flex justify-center w-full py-4 mt-auto">
+                <div className="max-w-4xl w-full px-4 text-center">
                     <AdSenseAd
                         client={ADSENSE_CLIENT}
                         slot={ADSENSE_SLOT}
@@ -41,9 +43,9 @@ export function AppAd({ type }: AppAdProps) {
         );
     }
 
-    // Inline ads - show on both web and mobile
+    // Inline ads
     return (
-        <div className="my-6 flex justify-center w-full overflow-hidden rounded-xl border bg-card/50">
+        <div className="my-6 flex justify-center w-full overflow-hidden">
             <AdSenseAd
                 client={ADSENSE_CLIENT}
                 slot={ADSENSE_SLOT}

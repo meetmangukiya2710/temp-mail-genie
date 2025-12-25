@@ -7,6 +7,10 @@ import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
 import { AppAd } from '@/components/ads/AppAd';
+import { HowItWorks } from '@/components/content/HowItWorks';
+import { FAQ } from '@/components/content/FAQ';
+import { AboutSection } from '@/components/content/AboutSection';
+import { Link } from 'react-router-dom';
 
 export default function Index() {
   const {
@@ -140,6 +144,13 @@ export default function Index() {
 
           {/* Inline Ad 3 */}
           <AppAd type="inline" />
+
+          {/* New Content Sections */}
+          <div className="mt-16 space-y-16">
+            <HowItWorks />
+            <AboutSection />
+            <FAQ />
+          </div>
         </main>
 
         {/* Right Sidebar Ad */}
@@ -150,9 +161,23 @@ export default function Index() {
       <AppAd type="banner" />
 
       {/* Footer */}
-      <footer className="border-t mt-auto">
-        <div className="container py-6 text-center text-sm text-muted-foreground">
-          <p>© 2024 Temp Mail OneTap. No data is stored permanently.</p>
+      <footer className="border-t mt-20 bg-card/30">
+        <div className="container py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="text-left">
+              <h3 className="font-bold text-lg mb-2">Temp Mail OneTap</h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                Providing secure, fast, and disposable email addresses to keep your privacy safe online.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-6 md:justify-end text-sm">
+              <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+            </div>
+          </div>
+          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
+            <p>© 2024 Temp Mail OneTap. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,13 +10,19 @@ import {
   Bell,
   ExternalLink,
   Info,
-  Heart
+  Heart,
+  ChevronRight
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { AppAd } from '@/components/ads/AppAd';
+import { Link } from 'react-router-dom';
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    console.log('[Settings] Page mounted');
+  }, []);
 
   return (
     <div className="min-h-screen gradient-hero">
@@ -25,8 +32,8 @@ export default function Settings() {
         <div className="max-w-lg mx-auto">
           <h1 className="text-2xl font-bold mb-6 animate-fade-in">Settings</h1>
 
-          <AppAd type="inline" />
 
+          <AppAd type="inline" />
 
           <div className="space-y-4 stagger-children">
             {/* Appearance */}
@@ -89,14 +96,24 @@ export default function Settings() {
                   Legal
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="ghost" className="w-full justify-between h-auto py-3">
-                  <span>Privacy Policy</span>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              <CardContent className="p-0">
+                <Button variant="ghost" className="w-full justify-between h-auto py-4 px-6 rounded-none border-b group" asChild>
+                  <Link to="/privacy-policy">
+                    <span className="flex items-center gap-3">
+                      <FileText className="h-4 w-4 text-primary" />
+                      Privacy Policy
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </Button>
-                <Button variant="ghost" className="w-full justify-between h-auto py-3">
-                  <span>Terms of Service</span>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                <Button variant="ghost" className="w-full justify-between h-auto py-4 px-6 rounded-none group" asChild>
+                  <Link to="/terms-of-service">
+                    <span className="flex items-center gap-3">
+                      <FileText className="h-4 w-4 text-primary" />
+                      Terms of Service
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -158,6 +175,7 @@ export default function Settings() {
       </main>
 
       <AppAd type="banner" />
+
     </div>
   );
 }
