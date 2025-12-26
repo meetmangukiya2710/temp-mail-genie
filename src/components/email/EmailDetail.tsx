@@ -5,6 +5,7 @@ import { EmailMessage } from '@/types/email';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface EmailDetailProps {
   message: EmailMessage;
@@ -14,12 +15,13 @@ interface EmailDetailProps {
 
 export function EmailDetail({ message, onBack, authToken }: EmailDetailProps) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
   const copyContent = async () => {
     try {
       await navigator.clipboard.writeText(message.text || '');
       setCopied(true);
-      toast.success('Email content copied!');
+      toast.success(t('common.copied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error('Failed to copy');
@@ -49,7 +51,7 @@ export function EmailDetail({ message, onBack, authToken }: EmailDetailProps) {
   const copyOtp = async (code: string) => {
     try {
       await navigator.clipboard.writeText(code);
-      toast.success(`Code "${code}" copied!`);
+      toast.success(`${t('common.copied')} "${code}"`);
     } catch {
       toast.error('Failed to copy code');
     }
@@ -68,13 +70,13 @@ export function EmailDetail({ message, onBack, authToken }: EmailDetailProps) {
     <Card className="animate-fade-in overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b">
-        <Button variant="ghost" size="icon" onClick={onBack}>
+        <Button variant="ghost" size="icon" onClick={onBack} aria-label={t('common.back')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="font-semibold truncate flex-1">Message</h2>
+        <h2 className="font-semibold truncate flex-1">{t('inbox.title')}</h2>
         <Button variant="outline" size="sm" onClick={copyContent}>
           <Copy className="h-4 w-4" />
-          Copy
+          {t('common.copy')}
         </Button>
       </div>
 
@@ -99,14 +101,14 @@ export function EmailDetail({ message, onBack, authToken }: EmailDetailProps) {
           <span>{format(message.createdAt, 'PPpp')}</span>
         </div>
 
-        {message.isOtp && (
+        {message.subject.toLowerCase().includes('otp') || message.subject.toLowerCase().includes('code') || message.subject.toLowerCase().includes('verify') ? (
           <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 rounded-lg">
             <Shield className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-primary">
-              This email contains a verification code
+              {t('inbox.otp_badge')}
             </span>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Subject */}

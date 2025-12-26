@@ -2,6 +2,7 @@ import { Mail, Settings, Moon, Sun, Menu, Home, Shield, FileText, ChevronRight }
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/hooks/useTheme';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Sheet,
   SheetContent,
@@ -12,13 +13,14 @@ import {
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const location = useLocation();
 
   const navLinks = [
-    { label: 'Home', path: '/', icon: Home },
-    { label: 'Settings', path: '/settings', icon: Settings },
-    { label: 'Privacy Policy', path: '/privacy-policy', icon: Shield },
-    { label: 'Terms of Service', path: '/terms-of-service', icon: FileText },
+    { label: t('nav.home'), path: '/', icon: Home },
+    { label: t('nav.settings'), path: '/settings', icon: Settings },
+    { label: t('nav.privacy'), path: '/privacy-policy', icon: Shield },
+    { label: t('nav.terms'), path: '/terms-of-service', icon: FileText },
   ];
 
   return (
@@ -38,6 +40,7 @@ export function Header() {
             size="icon"
             onClick={toggleTheme}
             className="rounded-lg"
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? (
               <Sun className="h-5 w-5" />
@@ -51,6 +54,7 @@ export function Header() {
             size="icon"
             asChild
             className="rounded-lg"
+            aria-label="Settings"
           >
             <Link to="/settings">
               <Settings className="h-5 w-5" />
@@ -65,6 +69,7 @@ export function Header() {
             size="icon"
             onClick={toggleTheme}
             className="rounded-lg"
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? (
               <Sun className="h-5 w-5" />
@@ -75,7 +80,7 @@ export function Header() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-lg">
+              <Button variant="ghost" size="icon" className="rounded-lg" aria-label="Open menu">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -123,8 +128,10 @@ export function Header() {
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-sm">Theme</p>
-                      <p className="text-xs text-muted-foreground capitalize">{theme} Mode</p>
+                      <p className="font-medium text-sm">{t('settings.theme')}</p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {theme} {t('settings.theme')}
+                      </p>
                     </div>
                   </div>
                   <Button

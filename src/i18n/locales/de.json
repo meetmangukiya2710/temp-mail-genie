@@ -1,0 +1,89 @@
+{
+    "common": {
+        "app_name": "Temp Mail OneTap",
+        "copy": "Kopieren",
+        "copied": "Kopiert!",
+        "back": "Zurück",
+        "refresh": "Aktualisieren",
+        "loading": "Laden...",
+        "new_email": "Neue E-Mail",
+        "try_again": "Erneut versuchen"
+    },
+    "nav": {
+        "home": "Startseite",
+        "settings": "Einstellungen",
+        "privacy": "Datenschutz",
+        "terms": "Nutzungsbedingungen"
+    },
+    "hero": {
+        "title_main": "Temporäre E-Mail für",
+        "title_accent": "OTP & Spam",
+        "subtitle": "Erhalten Sie sofort Einweg-E-Mail-Adressen. Keine Anmeldung erforderlich. Schützen Sie Ihre Privatsphäre vor Spam und unerwünschten E-Mails."
+    },
+    "email": {
+        "your_address": "Ihre temporäre E-Mail-Adresse",
+        "copy_email": "E-Mail kopieren",
+        "remaining": "verbleibend",
+        "expired": "Abgelaufen",
+        "creating": "E-Mail wird erstellt..."
+    },
+    "inbox": {
+        "title": "Posteingang",
+        "no_emails": "Noch keine E-Mails",
+        "no_emails_desc": "Tippen Sie auf Aktualisieren, um nach neuen Nachrichten zu suchen",
+        "otp_badge": "OTP / Verifizierung"
+    },
+    "features": {
+        "instant": "Sofort",
+        "instant_desc": "Keine Anmeldung",
+        "private": "Privat",
+        "private_desc": "Kein Tracking",
+        "time": "30 Min",
+        "time_desc": "Autom. Ablauf",
+        "disposable": "Einweg",
+        "disposable_desc": "Selbstzerstörend"
+    },
+    "how_it_works": {
+        "title": "So funktioniert es",
+        "step1_title": "E-Mail generieren",
+        "step1_desc": "Erhalten Sie sofort eine einzigartige temporäre E-Mail-Adresse mit nur einem Fingertipp.",
+        "step2_title": "E-Mails empfangen",
+        "step2_desc": "Nutzen Sie Ihre temporäre E-Mail für jeden Dienst. Verfolgen Sie Nachrichten in Echtzeit.",
+        "step3_title": "Lesen & Vergessen",
+        "step3_desc": "Lesen Sie Ihre Verifizierungscodes oder Inhalte. Die E-Mail läuft automatisch ab."
+    },
+    "faq": {
+        "title": "Häufig gestellte Fragen",
+        "q1": "Was ist eine temporäre E-Mail-Adresse?",
+        "a1": "Eine temporäre E-Mail-Adresse ist eine Einweg-E-Mail, die Sie für kurzfristige Zwecke verwenden können, z. B. für die Anmeldung bei einem Dienst oder den Empfang eines Einmalpassworts (OTP). Sie schützt Ihre echte E-Mail vor Spam.",
+        "q2": "Wie lange hält eine temporäre E-Mail?",
+        "a2": "Unsere temporären E-Mail-Adressen halten in der Regel 30 Minuten, was genug Zeit ist, um Verifizierungs-E-Mails oder OTPs zu erhalten und zu lesen.",
+        "q3": "Ist die Nutzung von Temp Mail OneTap sicher?",
+        "a3": "Ja, es ist sicher. Wir speichern keine persönlichen Informationen und alle E-Mails werden nach Ablauf automatisch gelöscht.",
+        "q4": "Kann ich mit diesem Dienst E-Mails versenden?",
+        "a4": "Temp Mail OneTap ist nur für den Empfang von E-Mails konzipiert, um Missbrauch für Spam zu verhindern.",
+        "q5": "Muss ich mich anmelden, um den Dienst zu nutzen?",
+        "a5": "Keine Anmeldung oder Registrierung erforderlich. Sie erhalten sofort eine E-Mail-Adresse, sobald Sie die Website besuchen."
+    },
+    "about": {
+        "title": "Über Temp Mail OneTap",
+        "p1": "Temp Mail OneTap bietet kostenlose, sichere Einweg-E-Mail-Adressen. Unser Ziel ist es, Ihre Online-Privatsphäre zu schützen.",
+        "p2": "Egal, ob Sie sich für einen neuen Dienst anmelden oder einen Verifizierungscode (OTP) benötigen – unser Dienst sorgt für ein sauberes Postfach.",
+        "why_title": "Warum wir?",
+        "why_item1": "Keine persönlichen Daten erforderlich",
+        "why_item2": "Sofortiger Posteingang",
+        "why_item3": "Automatische Löschung",
+        "why_item4": "Saubere Oberfläche"
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "appearance": "Erscheinungsbild",
+        "theme": "Design",
+        "theme_desc": "Wählen Sie zwischen hellem und dunklem Modus",
+        "language": "Sprache",
+        "language_desc": "Wählen Sie Ihre bevorzugte Sprache",
+        "auto_detect": "Auto-Erkennung",
+        "legal": "Rechtliches",
+        "app_version": "Version"
+    }
+}

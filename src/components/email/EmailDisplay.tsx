@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Copy, Check, RefreshCw, Clock, AlertCircle } from 'lucide-react';
+import { Copy, RefreshCw, Clock, Check } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { DomainSelector } from './DomainSelector';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useTranslation } from 'react-i18next';
 
 interface EmailDisplayProps {
   email: string;
   timeLeft: string;
   isExpired: boolean;
-  onCopy: () => Promise<boolean>;
+  onCopy: () => void;
   onGenerate: () => void;
   isLoading?: boolean;
   availableDomains?: string[];
@@ -26,122 +32,92 @@ export function EmailDisplay({
   onGenerate,
   isLoading,
   availableDomains = [],
-  selectedDomain = '',
-  onDomainChange,
+  selectedDomain,
+  onDomainChange
 }: EmailDisplayProps) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
-  const handleCopy = async () => {
-    const success = await onCopy();
-    if (success) {
-      setCopied(true);
-      toast.success('Email copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    } else {
-      toast.error('Failed to copy email');
-    }
+  const handleCopy = () => {
+    onCopy();
+    setCopied(true);
+    toast.success(t('common.copied'));
+    setTimeout(() => setCopied(false), 2000);
   };
 
+  const emailUser = email.split('@')[0];
+
   return (
-    <Card className="overflow-hidden animate-fade-in">
-      <div className="p-6 sm:p-8">
-        {/* Timer */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium",
-            isExpired
-              ? "bg-destructive/10 text-destructive"
-              : "bg-accent text-accent-foreground"
-          )}>
-            {isExpired ? (
-              <>
-                <AlertCircle className="h-4 w-4" />
-                <span>Expired</span>
-              </>
-            ) : (
-              <>
-                <Clock className="h-4 w-4" />
-                <span className="font-mono tabular-nums">{timeLeft}</span>
-                <span className="text-muted-foreground">remaining</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Email address */}
-        <div className="space-y-4">
-          {/* Domain Selector */}
-          {availableDomains.length > 0 && onDomainChange && (
-            <DomainSelector
-              domains={availableDomains}
-              selectedDomain={selectedDomain}
-              onDomainChange={onDomainChange}
-              disabled={isLoading}
-            />
-          )}
-
-          <p className="text-center text-sm text-muted-foreground">
-            Your temporary email address
-          </p>
-
-          <div className="relative group">
-            <div className={cn(
-              "flex items-center justify-between gap-3 p-4 rounded-xl border-2 border-dashed transition-all duration-200",
-              "bg-muted/50 hover:border-primary/50",
-              copied && "border-success bg-success/5"
-            )}>
-              <code className="flex-1 text-base sm:text-lg font-mono font-medium truncate">
-                {email}
-              </code>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCopy}
-                className="shrink-0"
-              >
-                {copied ? (
-                  <Check className="h-5 w-5 text-success" />
-                ) : (
-                  <Copy className="h-5 w-5" />
-                )}
-              </Button>
+    <Card className="border-2 shadow-lg animate-scale-in overflow-hidden min-h-[400px]">
+      <div className="bg-primary/5 px-6 py-4 border-b">
+        <label className="text-sm font-medium text-muted-foreground block mb-1">
+          {t('email.your_address')}
+        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex-1 min-w-[200px] flex items-center bg-background border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+            <span className="px-3 py-2 font-medium truncate">{emailUser}</span>
+            <span className="text-muted-foreground">@</span>
+            <div className="flex-1">
+              <Select value={selectedDomain} onValueChange={onDomainChange} disabled={isLoading}>
+                <SelectTrigger className="border-0 focus:ring-0 h-9 bg-transparent shadow-none">
+                  <SelectValue placeholder="domain" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableDomains.map(domain => (
+                    <SelectItem key={domain} value={domain}>{domain}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <Button
             onClick={handleCopy}
-            size="lg"
-            className="flex-1 h-[50px]"
-            disabled={isLoading}
-          >
-            {copied ? (
-              <>
-                <Check className="h-5 w-5" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="h-5 w-5" />
-                Copy Email
-              </>
-            )}
-          </Button>
-
-          <Button
-            onClick={onGenerate}
             variant="outline"
-            size="lg"
-            className="flex-1 h-[50px]"
-            disabled={isLoading}
+            size="icon"
+            className="shrink-0"
+            aria-label={t('email.copy_email')}
           >
-            <RefreshCw className={cn("h-5 w-5", isLoading && "animate-spin")} />
-            New Email
+            {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
           </Button>
         </div>
       </div>
+
+      <CardContent className="p-6 space-y-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className={`h-12 w-12 rounded-full flex items-center justify-center ${isExpired ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary animate-pulse-gentle'}`}>
+              <Clock size={24} />
+            </div>
+            <div>
+              <p className="text-2xl font-bold tracking-tight">
+                {isExpired ? t('email.expired') : timeLeft}
+              </p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                {isExpired ? "" : t('email.remaining')}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 w-full sm:w-auto">
+            <Button
+              onClick={handleCopy}
+              className="flex-1 sm:flex-none gap-2"
+              variant="secondary"
+            >
+              <Copy size={18} />
+              {t('email.copy_email')}
+            </Button>
+            <Button
+              onClick={onGenerate}
+              className="flex-1 sm:flex-none gap-2 shadow-md hover:shadow-lg transition-all"
+              disabled={isLoading}
+            >
+              <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
+              {t('common.new_email')}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 }

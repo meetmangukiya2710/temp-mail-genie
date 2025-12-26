@@ -4,25 +4,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Shield,
   FileText,
   Moon,
   Bell,
-  ExternalLink,
   Info,
   Heart,
-  ChevronRight
+  ChevronRight,
+  Languages
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { AppAd } from '@/components/ads/AppAd';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
+  const { t, i18n } = useTranslation();
 
-  useEffect(() => {
-    console.log('[Settings] Page mounted');
-  }, []);
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'fr', name: 'Français' },
+    { code: 'de', name: 'Deutsch' },
+    { code: 'hi', name: 'हिन्दी' },
+  ];
 
   return (
     <div className="min-h-screen gradient-hero">
@@ -30,8 +47,7 @@ export default function Settings() {
 
       <main className="container py-6 sm:py-10">
         <div className="max-w-lg mx-auto">
-          <h1 className="text-2xl font-bold mb-6 animate-fade-in">Settings</h1>
-
+          <h1 className="text-2xl font-bold mb-6 animate-fade-in">{t('settings.title')}</h1>
 
           <AppAd type="inline" />
 
@@ -41,21 +57,47 @@ export default function Settings() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Moon className="h-5 w-5 text-primary" />
-                  Appearance
+                  {t('settings.appearance')}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Dark Mode</p>
+                    <p className="font-medium">{t('settings.theme')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Switch between light and dark themes
+                      {t('settings.theme_desc')}
                     </p>
                   </div>
                   <Switch
                     checked={theme === 'dark'}
                     onCheckedChange={toggleTheme}
                   />
+                </div>
+
+                <div className="pt-4 border-t">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2">
+                      <Languages className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">{t('settings.language')}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('settings.language_desc')}
+                        </p>
+                      </div>
+                    </div>
+                    <Select value={i18n.language.split('-')[0]} onValueChange={handleLanguageChange}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="Language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -93,7 +135,7 @@ export default function Settings() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary" />
-                  Legal
+                  {t('settings.legal')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -101,7 +143,7 @@ export default function Settings() {
                   <Link to="/privacy-policy">
                     <span className="flex items-center gap-3">
                       <FileText className="h-4 w-4 text-primary" />
-                      Privacy Policy
+                      {t('nav.privacy')}
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -110,7 +152,7 @@ export default function Settings() {
                   <Link to="/terms-of-service">
                     <span className="flex items-center gap-3">
                       <FileText className="h-4 w-4 text-primary" />
-                      Terms of Service
+                      {t('nav.terms')}
                     </span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -125,26 +167,26 @@ export default function Settings() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
-                  Your Privacy
+                  {t('about.why_title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    No personal data collected
+                    {t('about.why_item1')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    Emails auto-delete after 30 minutes
+                    {t('about.why_item2')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    No registration required
+                    {t('about.why_item3')}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-success mt-0.5">✓</span>
-                    No tracking or analytics
+                    {t('about.why_item4')}
                   </li>
                 </ul>
               </CardContent>
@@ -157,7 +199,7 @@ export default function Settings() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Info className="h-5 w-5 text-primary" />
-                  About
+                  {t('common.app_name')}
                 </CardTitle>
               </CardHeader>
               <CardContent>

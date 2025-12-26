@@ -1,0 +1,89 @@
+{
+    "common": {
+        "app_name": "Temp Mail OneTap",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "back": "Back",
+        "refresh": "Refresh",
+        "loading": "Loading...",
+        "new_email": "New Email",
+        "try_again": "Try Again"
+    },
+    "nav": {
+        "home": "Home",
+        "settings": "Settings",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+    },
+    "hero": {
+        "title_main": "Temporary Email for",
+        "title_accent": "OTP & Spam",
+        "subtitle": "Get instant disposable email addresses. No signup required. Protect your privacy from spam and unwanted emails."
+    },
+    "email": {
+        "your_address": "Your temporary email address",
+        "copy_email": "Copy Email",
+        "remaining": "remaining",
+        "expired": "Expired",
+        "creating": "Creating your email..."
+    },
+    "inbox": {
+        "title": "Inbox",
+        "no_emails": "No emails yet",
+        "no_emails_desc": "Tap refresh to check for new messages",
+        "otp_badge": "OTP / Verification"
+    },
+    "features": {
+        "instant": "Instant",
+        "instant_desc": "No signup",
+        "private": "Private",
+        "private_desc": "No tracking",
+        "time": "30 min",
+        "time_desc": "Auto-expire",
+        "disposable": "Disposable",
+        "disposable_desc": "Self-destruct"
+    },
+    "how_it_works": {
+        "title": "How It Works",
+        "step1_title": "Generate Email",
+        "step1_desc": "Instantly get a unique temporary email address with just one tap.",
+        "step2_title": "Receive Emails",
+        "step2_desc": "Use your temp email for any service. Watch messages appear in real-time.",
+        "step3_title": "Read & Forget",
+        "step3_desc": "Read your verification codes or content. The email expires automatically."
+    },
+    "faq": {
+        "title": "Frequently Asked Questions",
+        "q1": "What is a temporary email address?",
+        "a1": "A temporary email address is a disposable email that you can use for short-term purposes, like signing up for a service or receiving a one-time password (OTP). It protects your real email from spam and phishing.",
+        "q2": "How long does a temporary email last?",
+        "a2": "Our temporary email addresses typically last for 30 minutes, which is enough time to receive and read any verification emails or OTPs.",
+        "q3": "Is it safe to use Temp Mail OneTap?",
+        "a3": "Yes, it is safe. We do not store any personal information, and all emails are automatically deleted after they expire. It's a great way to keep your primary inbox clean and secure.",
+        "q4": "Can I send emails using this service?",
+        "a4": "Temp Mail OneTap is designed for receiving emails only. This helps prevent the service from being used for spamming purposes.",
+        "q5": "Do I need to sign up to use the service?",
+        "a5": "No signup or registration is required. You get an instant email address as soon as you visit the site."
+    },
+    "about": {
+        "title": "About Temp Mail OneTap",
+        "p1": "Temp Mail OneTap provides free, secure, and disposable email addresses. Our goal is to protect your online privacy by providing a temporary inbox for those situations where you don't want to share your primary email address.",
+        "p2": "Whether you are signing up for a new service, downloading a whitepaper, or needing a one-time verification code (OTP), our service ensures that your real inbox stays free from spam and potential security threats.",
+        "why_title": "Why Choose Us?",
+        "why_item1": "Zero personal data required",
+        "why_item2": "Instant inbox delivery",
+        "why_item3": "Automatic email deletion",
+        "why_item4": "Clean, ad-light interface"
+    },
+    "settings": {
+        "title": "Settings",
+        "appearance": "Appearance",
+        "theme": "Theme",
+        "theme_desc": "Choose between light and dark mode",
+        "language": "Language",
+        "language_desc": "Select your preferred language",
+        "auto_detect": "Auto-detect",
+        "legal": "Legal",
+        "app_version": "Version"
+    }
+}

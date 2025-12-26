@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { TempEmail, EmailMessage, InboxState } from '@/types/email';
+import { TempEmail, EmailMessage } from '@/types/email';
 import { mailTmApi, MailTmSession, MailTmMessage, MailTmMessageFull } from '@/services/mailTmApi';
 import { toast } from 'sonner';
 
 const EMAIL_LIFETIME_MINUTES = 30;
-const STORAGE_KEY = 'tempmail-session-v2';
+const STORAGE_KEY = 'tempmail-session-v4';
 
 // Check if text contains OTP-like patterns
 function isOtpEmail(subject: string, text?: string): boolean {
@@ -66,8 +66,8 @@ async function createNewAccount(selectedDomain?: string): Promise<MailTmSession 
       address,
       password,
       token,
-      createdAt: now,
-      expiresAt: new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000),
+      createdAt: now.toISOString(),
+      expiresAt: new Date(now.getTime() + EMAIL_LIFETIME_MINUTES * 60 * 1000).toISOString(),
     };
 
     // Save to localStorage
@@ -84,8 +84,8 @@ function sessionToEmail(session: MailTmSession): TempEmail {
   return {
     id: session.accountId,
     address: session.address,
-    createdAt: session.createdAt,
-    expiresAt: session.expiresAt,
+    createdAt: new Date(session.createdAt),
+    expiresAt: new Date(session.expiresAt),
   };
 }
 
@@ -99,6 +99,19 @@ export function useTempEmail() {
   const [initialized, setInitialized] = useState(false);
   const [availableDomains, setAvailableDomains] = useState<string[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string>('');
+  const [lastRefreshTime, setLastRefreshTime] = useState<number>(0);
+  const REFRESH_COOLDOWN = 3000;
+
+  // Helper for retrying with backoff
+  const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => {
+    try {
+      return await fn();
+    } catch (error: any) {
+      if (retries === 0 || error.message === 'RATE_LIMIT') throw error;
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return retryWithBackoff(fn, retries - 1, delay * 2);
+    }
+  };
 
   // Initialize or restore session
   useEffect(() => {
@@ -127,11 +140,10 @@ export function useTempEmail() {
       if (stored) {
         try {
           const parsed: MailTmSession = JSON.parse(stored);
-          parsed.createdAt = new Date(parsed.createdAt);
-          parsed.expiresAt = new Date(parsed.expiresAt);
+          const expiresAt = new Date(parsed.expiresAt);
 
           // Check if expired
-          if (new Date() >= parsed.expiresAt) {
+          if (new Date() >= expiresAt) {
             // Try to delete old account (best effort)
             try {
               await mailTmApi.deleteAccount(parsed.token, parsed.accountId);
@@ -233,49 +245,66 @@ export function useTempEmail() {
   const refreshInbox = useCallback(async () => {
     if (!session) return;
 
+    // Cool-down check
+    const now = Date.now();
+    if (now - lastRefreshTime < REFRESH_COOLDOWN) {
+      toast.info(`Please wait a few seconds before refreshing again.`);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const mailTmMessages = await mailTmApi.getMessages(session.token);
+      // Fetch brief messages with retry
+      const mailTmMessages = await retryWithBackoff(() =>
+        mailTmApi.getMessages(session.token)
+      );
 
-      // Get full content for each message
+      // Fetch full content for each message (Resiliently)
       const messagesWithContent = await Promise.all(
         mailTmMessages.map(async (msg) => {
           try {
             const fullMsg = await mailTmApi.getMessage(session.token, msg.id);
             return convertMessage(fullMsg);
-          } catch {
+          } catch (err) {
+            console.warn(`Failed to fetch detail for message ${msg.id}:`, err);
             return convertMessage(msg);
           }
         })
       );
 
-      // Deduplicate messages by ID to prevent double showing
-      const uniqueMessages = Array.from(
-        new Map(messagesWithContent.map(m => [m.id, m])).values()
-      );
-
       // Sort by date, newest first
-      uniqueMessages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      messagesWithContent.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-      const newCount = uniqueMessages.filter(m =>
+      const newCount = messagesWithContent.filter(m =>
         !messages.find(om => om.id === m.id)
       ).length;
 
-      setMessages(uniqueMessages);
+      setMessages(messagesWithContent);
+      setLastRefreshTime(Date.now());
       setIsLoading(false);
 
       if (newCount > 0) {
         toast.success(`${newCount} new message${newCount > 1 ? 's' : ''} received!`);
+      } else if (mailTmMessages.length === 0) {
+        toast.info('Inbox is empty. No new messages.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch messages:', err);
-      setError('Failed to fetch messages');
+
+      let errorMessage = 'Failed to refresh inbox';
+      if (err.message === 'RATE_LIMIT') {
+        errorMessage = 'Too many requests. Please wait a minute.';
+      } else if (err.message === 'TIMEOUT') {
+        errorMessage = 'Connection timed out. Check your internet.';
+      }
+
+      setError(errorMessage);
       setIsLoading(false);
-      toast.error('Failed to refresh inbox');
+      toast.error(errorMessage);
     }
-  }, [session, messages]);
+  }, [session, messages, lastRefreshTime]);
 
   // Copy email to clipboard
   const copyEmail = useCallback(async () => {

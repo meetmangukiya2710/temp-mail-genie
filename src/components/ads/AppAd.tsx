@@ -45,12 +45,12 @@ export function AppAd({ type }: AppAdProps) {
 
     // Inline ads
     return (
-        <div className="my-6 flex justify-center w-full overflow-hidden">
+        <div className="my-6 flex justify-center w-full overflow-hidden min-h-[280px] bg-muted/20 rounded-xl">
             <AdSenseAd
                 client={ADSENSE_CLIENT}
                 slot={ADSENSE_SLOT}
                 format="fluid"
-                layoutKey="-ef+6k-30-ac+ty"
+                layoutKey="-ff+51-28-ag+ra"
             />
         </div>
     );

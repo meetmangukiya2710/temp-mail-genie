@@ -1,0 +1,89 @@
+{
+    "common": {
+        "app_name": "Temp Mail OneTap",
+        "copy": "Copiar",
+        "copied": "¡Copiado!",
+        "back": "Volver",
+        "refresh": "Actualizar",
+        "loading": "Cargando...",
+        "new_email": "Nuevo Correo",
+        "try_again": "Intentar de Nuevo"
+    },
+    "nav": {
+        "home": "Inicio",
+        "settings": "Ajustes",
+        "privacy": "Política de Privacidad",
+        "terms": "Términos de Servicio"
+    },
+    "hero": {
+        "title_main": "Correo Temporal para",
+        "title_accent": "OTP y Spam",
+        "subtitle": "Obtén direcciones de correo desechables al instante. Sin registro. Protege tu privacidad del spam y correos no deseados."
+    },
+    "email": {
+        "your_address": "Tu dirección de correo temporal",
+        "copy_email": "Copiar Correo",
+        "remaining": "restante",
+        "expired": "Expirado",
+        "creating": "Creando tu correo..."
+    },
+    "inbox": {
+        "title": "Bandeja de Entrada",
+        "no_emails": "No hay correos aún",
+        "no_emails_desc": "Toca actualizar para buscar nuevos mensajes",
+        "otp_badge": "OTP / Verificación"
+    },
+    "features": {
+        "instant": "Instantáneo",
+        "instant_desc": "Sin registro",
+        "private": "Privado",
+        "private_desc": "Sin rastreo",
+        "time": "30 min",
+        "time_desc": "Auto-expiración",
+        "disposable": "Desechable",
+        "disposable_desc": "Auto-destrucción"
+    },
+    "how_it_works": {
+        "title": "Cómo Funciona",
+        "step1_title": "Generar Correo",
+        "step1_desc": "Obtén al instante una dirección de correo única con un solo toque.",
+        "step2_title": "Recibir Correos",
+        "step2_desc": "Usa tu correo temporal en cualquier servicio. Mira los mensajes en tiempo real.",
+        "step3_title": "Leer y Olvidar",
+        "step3_desc": "Lee tus códigos de verificación o contenido. El correo expira automáticamente."
+    },
+    "faq": {
+        "title": "Preguntas Frecuentes",
+        "q1": "¿Qué es una dirección de correo temporal?",
+        "a1": "Una dirección de correo temporal es un correo desechable que puedes usar a corto plazo, como para registrarte en un servicio o recibir una contraseña de un solo uso (OTP). Protege tu correo real del spam.",
+        "q2": "¿Cuánto dura un correo temporal?",
+        "a2": "Nuestras direcciones de correo temporal suelen durar 30 minutos, tiempo suficiente para recibir y leer cualquier correo de verificación u OTP.",
+        "q3": "¿Es seguro usar Temp Mail OneTap?",
+        "a3": "Sí, es seguro. No almacenamos ninguna información personal y todos los correos se eliminan automáticamente después de expirar.",
+        "q4": "¿Puedo enviar correos usando este servicio?",
+        "a4": "Temp Mail OneTap está diseñado solo para recibir correos. Esto ayuda a prevenir que el servicio se use para spam.",
+        "q5": "¿Necesito registrarme para usar el servicio?",
+        "a5": "No se requiere registro. Obtienes una dirección de correo instantánea tan pronto como visitas el sitio."
+    },
+    "about": {
+        "title": "Sobre Temp Mail OneTap",
+        "p1": "Temp Mail OneTap ofrece direcciones de correo gratuitas, seguras y desechables. Nuestro objetivo es proteger tu privacidad en línea proporcionando una bandeja de entrada temporal.",
+        "p2": "Ya sea que te estés registrando en un nuevo servicio o necesites un código de verificación (OTP), nuestro servicio asegura que tu bandeja de entrada real permanezca libre de spam.",
+        "why_title": "¿Por qué Elegirnos?",
+        "why_item1": "Cero datos personales requeridos",
+        "why_item2": "Entrega de bandeja instantánea",
+        "why_item3": "Eliminación automática de correos",
+        "why_item4": "Interfaz limpia y sin distracciones"
+    },
+    "settings": {
+        "title": "Ajustes",
+        "appearance": "Apariencia",
+        "theme": "Tema",
+        "theme_desc": "Elige entre modo claro y oscuro",
+        "language": "Idioma",
+        "language_desc": "Selecciona tu idioma preferido",
+        "auto_detect": "Auto-detectar",
+        "legal": "Legal",
+        "app_version": "Versión"
+    }
+}

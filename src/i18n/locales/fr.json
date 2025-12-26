@@ -1,0 +1,89 @@
+{
+    "common": {
+        "app_name": "Temp Mail OneTap",
+        "copy": "Copier",
+        "copied": "Copié !",
+        "back": "Retour",
+        "refresh": "Actualiser",
+        "loading": "Chargement...",
+        "new_email": "Nouvel Email",
+        "try_again": "Réessayer"
+    },
+    "nav": {
+        "home": "Accueil",
+        "settings": "Paramètres",
+        "privacy": "Confidentialité",
+        "terms": "Conditions d'utilisation"
+    },
+    "hero": {
+        "title_main": "Email Temporaire pour",
+        "title_accent": "OTP & Spam",
+        "subtitle": "Obtenez des adresses e-mail jetables instantanées. Aucun compte requis. Protégez votre vie privée des spams et des e-mails indésirables."
+    },
+    "email": {
+        "your_address": "Votre adresse e-mail temporaire",
+        "copy_email": "Copier l'Email",
+        "remaining": "restant",
+        "expired": "Expiré",
+        "creating": "Création de votre email..."
+    },
+    "inbox": {
+        "title": "Boîte de réception",
+        "no_emails": "Pas encore d'e-mails",
+        "no_emails_desc": "Appuyez sur actualiser pour voir les nouveaux messages",
+        "otp_badge": "OTP / Vérification"
+    },
+    "features": {
+        "instant": "Instantané",
+        "instant_desc": "Sans inscription",
+        "private": "Privé",
+        "private_desc": "Aucun suivi",
+        "time": "30 min",
+        "time_desc": "Auto-expiration",
+        "disposable": "Jetable",
+        "disposable_desc": "Auto-destruction"
+    },
+    "how_it_works": {
+        "title": "Comment ça marche",
+        "step1_title": "Générer un Email",
+        "step1_desc": "Obtenez instantanément une adresse e-mail temporaire unique en un seul clic.",
+        "step2_title": "Recevoir des Emails",
+        "step2_desc": "Utilisez votre e-mail temporaire pour n'importe quel service. Regardez les messages arriver en temps réel.",
+        "step3_title": "Lire & Oublier",
+        "step3_desc": "Lisez vos codes de vérification ou votre contenu. L'e-mail expire automatiquement."
+    },
+    "faq": {
+        "title": "Foire Aux Questions",
+        "q1": "Qu'est-ce qu'une adresse e-mail temporaire ?",
+        "a1": "Une adresse e-mail temporaire est un e-mail jetable que vous pouvez utiliser pour des besoins à court terme, comme l'inscription à un service ou la réception d'un mot de passe à usage unique (OTP). Elle protège votre véritable adresse e-mail contre le spam.",
+        "q2": "Combien de temps dure un e-mail temporaire ?",
+        "a2": "Nos adresses e-mail temporaires durent généralement 30 minutes, ce qui est suffisant pour recevoir et lire tout e-mail de vérification ou OTP.",
+        "q3": "Est-il sûr d'utiliser Temp Mail OneTap ?",
+        "a3": "Oui, c'est sûr. Nous ne stockons aucune information personnelle et tous les e-mails sont automatiquement supprimés après leur expiration.",
+        "q4": "Puis-je envoyer des e-mails avec ce service ?",
+        "a4": "Temp Mail OneTap est conçu pour la réception d'e-mails uniquement afin de prévenir le spam.",
+        "q5": "Dois-je m'inscrire pour utiliser le service ?",
+        "a5": "Aucune inscription n'est requise. Vous obtenez une adresse e-mail instantanée dès que vous visitez le site."
+    },
+    "about": {
+        "title": "À propos de Temp Mail OneTap",
+        "p1": "Temp Mail OneTap fournit des adresses e-mail gratuites, sécurisées et jetables. Notre objectif est de protéger votre vie privée en ligne.",
+        "p2": "Qu'il s'agisse de s'inscrire à un nouveau service ou de recevoir un code de vérification (OTP), notre service garantit que votre boîte de réception reste exempte de spam.",
+        "why_title": "Pourquoi nous choisir ?",
+        "why_item1": "Zéro donnée personnelle requise",
+        "why_item2": "Boîte de réception instantanée",
+        "why_item3": "Suppression automatique des e-mails",
+        "why_item4": "Interface propre et sans publicité excessive"
+    },
+    "settings": {
+        "title": "Paramètres",
+        "appearance": "Apparence",
+        "theme": "Thème",
+        "theme_desc": "Choisissez entre le mode clair et sombre",
+        "language": "Langue",
+        "language_desc": "Sélectionnez votre langue préférée",
+        "auto_detect": "Détection auto",
+        "legal": "Légal",
+        "app_version": "Version"
+    }
+}

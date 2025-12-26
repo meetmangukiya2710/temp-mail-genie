@@ -1,18 +1,22 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Header } from '@/components/layout/Header';
 import { EmailDisplay } from '@/components/email/EmailDisplay';
 import { InboxList } from '@/components/email/InboxList';
-import { EmailDetail } from '@/components/email/EmailDetail';
 import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
 import { AppAd } from '@/components/ads/AppAd';
-import { HowItWorks } from '@/components/content/HowItWorks';
-import { FAQ } from '@/components/content/FAQ';
-import { AboutSection } from '@/components/content/AboutSection';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
+// Lazy load below-the-fold components
+const HowItWorks = lazy(() => import('@/components/content/HowItWorks').then(m => ({ default: m.HowItWorks })));
+const FAQ = lazy(() => import('@/components/content/FAQ').then(m => ({ default: m.FAQ })));
+const AboutSection = lazy(() => import('@/components/content/AboutSection').then(m => ({ default: m.AboutSection })));
+const EmailDetail = lazy(() => import('@/components/email/EmailDetail').then(m => ({ default: m.EmailDetail })));
 
 export default function Index() {
+  const { t } = useTranslation();
   const {
     email,
     messages,
@@ -41,7 +45,7 @@ export default function Index() {
             onClick={generateNewEmail}
             className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium"
           >
-            Try Again
+            {t('common.try_again')}
           </button>
         </div>
       </div>
@@ -54,7 +58,7 @@ export default function Index() {
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">Creating your email...</p>
+          <p className="text-muted-foreground">{t('email.creating')}</p>
         </div>
       </div>
     );
@@ -72,12 +76,11 @@ export default function Index() {
           {/* Hero section */}
           <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">
-              Temporary Email for{' '}
-              <span className="text-gradient">OTP & Spam</span>
+              {t('hero.title_main')}{' '}
+              <span className="text-gradient">{t('hero.title_accent')}</span>
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Get instant disposable email addresses. No signup required.
-              Protect your privacy from spam and unwanted emails.
+              {t('hero.subtitle')}
             </p>
           </div>
 
@@ -103,31 +106,33 @@ export default function Index() {
           <AppAd type="inline" />
 
           {/* Inbox or Email Detail */}
-          {selectedMessage ? (
-            <EmailDetail
-              message={selectedMessage}
-              onBack={() => setSelectedMessage(null)}
-              authToken={authToken}
-            />
-          ) : (
-            <InboxList
-              messages={messages}
-              isLoading={isLoading}
-              onRefresh={refreshInbox}
-              onSelectMessage={setSelectedMessage}
-              selectedId={selectedMessage?.id}
-            />
-          )}
+          <Suspense fallback={<div className="h-60 animate-pulse bg-muted/20 rounded-xl" />}>
+            {selectedMessage ? (
+              <EmailDetail
+                message={selectedMessage}
+                onBack={() => setSelectedMessage(null)}
+                authToken={authToken}
+              />
+            ) : (
+              <InboxList
+                messages={messages}
+                isLoading={isLoading}
+                onRefresh={refreshInbox}
+                onSelectMessage={setSelectedMessage}
+                selectedId={selectedMessage?.id}
+              />
+            )}
+          </Suspense>
 
           <AppAd type="inline" />
 
           {/* Features */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {[
-              { icon: Zap, label: 'Instant', desc: 'No signup' },
-              { icon: Shield, label: 'Private', desc: 'No tracking' },
-              { icon: Clock, label: '30 min', desc: 'Auto-expire' },
-              { icon: Trash2, label: 'Disposable', desc: 'Self-destruct' },
+              { icon: Zap, label: t('features.instant'), desc: t('features.instant_desc') },
+              { icon: Shield, label: t('features.private'), desc: t('features.private_desc') },
+              { icon: Clock, label: t('features.time'), desc: t('features.time_desc') },
+              { icon: Trash2, label: t('features.disposable'), desc: t('features.disposable_desc') },
             ].map(({ icon: Icon, label, desc }) => (
               <div
                 key={label}
@@ -146,11 +151,13 @@ export default function Index() {
           <AppAd type="inline" />
 
           {/* New Content Sections */}
-          <div className="mt-16 space-y-16">
-            <HowItWorks />
-            <AboutSection />
-            <FAQ />
-          </div>
+          <Suspense fallback={<div className="h-40 animate-pulse bg-muted/20 rounded-xl" />}>
+            <div className="mt-16 space-y-16">
+              <HowItWorks />
+              <AboutSection />
+              <FAQ />
+            </div>
+          </Suspense>
         </main>
 
         {/* Right Sidebar Ad */}
@@ -176,7 +183,7 @@ export default function Index() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>© 2024 Temp Mail OneTap. All rights reserved.</p>
+            <p>© 2025 Temp Mail OneTap. All rights reserved.</p>
           </div>
         </div>
       </footer>
