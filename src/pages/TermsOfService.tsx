@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function TermsOfService() {
     return (
-        <div className="min-h-screen gradient-hero">
+        <div className="min-h-screen gradient-hero ios-content-wrapper">
             <Header />
             <main className="max-w-4xl mx-auto px-4 py-12">
                 <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, RefreshCw, Clock, Check } from 'lucide-react';
+import { Copy, RefreshCw, Clock, Check, Edit } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTranslation } from 'react-i18next';
+import { CustomEmailDialog } from './CustomEmailDialog';
 
 interface EmailDisplayProps {
   email: string;
@@ -18,6 +19,7 @@ interface EmailDisplayProps {
   isExpired: boolean;
   onCopy: () => void;
   onGenerate: () => void;
+  onCreateCustom?: (username: string, domain: string) => Promise<void>;
   isLoading?: boolean;
   availableDomains?: string[];
   selectedDomain?: string;
@@ -30,12 +32,14 @@ export function EmailDisplay({
   isExpired,
   onCopy,
   onGenerate,
+  onCreateCustom,
   isLoading,
   availableDomains = [],
   selectedDomain,
   onDomainChange
 }: EmailDisplayProps) {
   const [copied, setCopied] = useState(false);
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
   const { t } = useTranslation();
 
   const handleCopy = () => {
@@ -48,7 +52,7 @@ export function EmailDisplay({
   const emailUser = email.split('@')[0];
 
   return (
-    <Card className="border-2 shadow-lg animate-scale-in overflow-hidden min-h-[400px]">
+    <Card className="border-2 shadow-lg animate-scale-in overflow-hidden">
       <div className="bg-primary/5 px-6 py-4 border-b">
         <label className="text-sm font-medium text-muted-foreground block mb-1">
           {t('email.your_address')}
@@ -98,7 +102,7 @@ export function EmailDisplay({
             </div>
           </div>
 
-          <div className="flex gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button
               onClick={handleCopy}
               className="flex-1 sm:flex-none gap-2"
@@ -107,6 +111,17 @@ export function EmailDisplay({
               <Copy size={18} />
               {t('email.copy_email')}
             </Button>
+            {onCreateCustom && (
+              <Button
+                onClick={() => setShowCustomDialog(true)}
+                className="flex-1 sm:flex-none gap-2"
+                variant="outline"
+                disabled={isLoading}
+              >
+                <Edit size={18} />
+                {t('email.custom.create_custom')}
+              </Button>
+            )}
             <Button
               onClick={onGenerate}
               className="flex-1 sm:flex-none gap-2 shadow-md hover:shadow-lg transition-all"
@@ -118,6 +133,18 @@ export function EmailDisplay({
           </div>
         </div>
       </CardContent>
+
+      {onCreateCustom && (
+        <CustomEmailDialog
+          open={showCustomDialog}
+          onOpenChange={setShowCustomDialog}
+          availableDomains={availableDomains}
+          selectedDomain={selectedDomain || availableDomains[0] || ''}
+          onDomainChange={onDomainChange || (() => { })}
+          onCreate={onCreateCustom}
+          isLoading={isLoading}
+        />
+      )}
     </Card>
   );
 }

@@ -5,7 +5,10 @@ const config: CapacitorConfig = {
   appName: 'Temp Mail OneTap',
   webDir: 'dist',
   ios: {
-    contentInset: 'automatic',
+    contentInset: 'never',
+    webContentsDebuggingEnabled: true,
+    limitsNavigationsToAppBoundDomains: false,
+    scrollEnabled: true,
   },
   android: {
     allowMixedContent: true,

@@ -56,7 +56,7 @@
     --shadow-soft: 0 4px 20px -4px hsl(220 20% 10% / 0.08);
     --shadow-glow: 0 0 30px hsl(173 80% 40% / 0.15);
     --shadow-card: 0 2px 12px -2px hsl(220 20% 10% / 0.06);
-  }
+  } /* Closing :root */
 
   .dark {
     --background: 220 25% 6%;
@@ -109,10 +109,8 @@
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
     --shadow-glow: 0 0 40px hsl(173 80% 45% / 0.2);
     --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.3);
-  }
-}
+  } /* Closing .dark */
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -120,12 +118,14 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    /* Add safe area padding for iOS */
-    padding-top: env(safe-area-inset-top);
+    /* Add safe area padding for iOS - but not top, header handles it */
     padding-bottom: env(safe-area-inset-bottom);
     /* Ensure body takes full height */
     min-height: 100vh;
     min-height: 100dvh;
+    /* Fix iOS scrolling issues */
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
 
   .font-mono {
@@ -143,10 +143,22 @@
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+    /* iOS scrolling fixes */
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
   }
-}
+
+  /* Ensure main content containers don't break sticky on iOS */
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+ /* Closing @layer base */
 
 @layer utilities {
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -171,17 +183,224 @@
     box-shadow: var(--shadow-card);
   }
 
+  .pt-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pt-web-header {
+    padding-top: 4rem;
+  }
+
   .text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    /* Set fallback color first - ensures text is visible on all platforms */
+    color: hsl(173, 80%, 45%);
+    /* Force text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Apply gradient effect only on platforms that support it reliably */
+  @supports (background-clip: text) and (not (-webkit-touch-callout: none)) {
+    /* Non-iOS platforms that support background-clip: text */
+    .text-gradient {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  /* Universal text visibility fix - highest priority */
+  h1 span {
+    /* Ensure all title spans are visible */
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Prevent text wrapping issues on mobile */
+  h1 {
+    /* Ensure title doesn't wrap awkwardly on small screens */
+    word-break: keep-all;
+    overflow-wrap: normal;
+    hyphens: none;
+    /* Ensure text is never hidden */
+    -webkit-text-fill-color: initial;
+    color: inherit;
+  }
+
+  /* Allow controlled wrapping for very small screens */
+  @media (max-width: 380px) {
+    h1 {
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+  }
+
+  /* iOS-specific text safety class */
+  .ios-text-safe {
+    /* Ensure text is always visible on iOS */
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+    .ios-text-safe {
+      /* Additional iOS-specific fixes */
+      -webkit-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
+      /* Prevent text from being hidden */
+      -webkit-text-fill-color: hsl(173, 80%, 45%) !important;
+      color: hsl(173, 80%, 45%) !important;
+      /* Ensure proper rendering */
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+    }
+  }
+
+  /* Android-specific fix - ensure text is always visible */
+  .android-text-fallback {
+    /* Explicit fallback color for Android WebView */
+    color: hsl(173, 80%, 45%) !important;
+    /* Ensure no transparency issues */
+    -webkit-text-fill-color: hsl(173, 80%, 45%) !important;
+  }
+
+  /* Fallback for browsers that don't support background-clip: text */
+  @supports not (background-clip: text) {
+    .text-gradient {
+      background: none !important;
+      -webkit-text-fill-color: hsl(173, 80%, 45%) !important;
+      color: hsl(173, 80%, 45%) !important;
+    }
   }
 
   /* Glass effect */
   .glass {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
   }
+
+  /* iOS fixed header - use fixed instead of sticky for better iOS WebView support */
+  @supports (-webkit-touch-callout: none) {
+    /* iOS Safari/WebView specific fixes - use fixed positioning */
+    header.ios-sticky-header,
+    header[class*="sticky"] {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      /* Ensure header stays on top on iOS */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Force hardware acceleration */
+      will-change: transform;
+      /* Ensure proper stacking */
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    /* Content wrapper needs padding to account for fixed header */
+    /* Header height: h-16 (4rem) + pt-2 (0.5rem on mobile) */
+    .ios-content-wrapper {
+      padding-top: 4.5rem;
+    }
+
+    /* On larger screens, header has pt-0, so adjust */
+    @media (min-width: 640px) {
+      .ios-content-wrapper {
+        padding-top: 4rem;
+      }
+    }
+  }
+
+  /* Additional iOS fixes for fixed positioning */
+  /* .ios-sticky-header is now handled by platform-specific @supports rules below */
+
+  /* iOS specific fixed header */
+  @supports (-webkit-touch-callout: none) {
+    header.ios-sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 50;
+      /* Ensure header has background */
+      background-color: hsl(var(--card) / 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
+
+  /* Non-iOS (Android, Web) sticky header */
+  @supports not (-webkit-touch-callout: none) {
+    header.ios-sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+  }
+
+  header.web-sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 50;
+    background-color: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Non-iOS (Android, Web) content area padding */
+  .android-content-area {
+    /* Header height: h-16 (4rem) + pt-2 (0.5rem on mobile) */
+    padding-top: 4.5rem;
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  @media (min-width: 640px) {
+    .android-content-area {
+      /* On larger screens, header has pt-0, so just h-16 */
+      padding-top: 4rem;
+    }
+  }
+
+  /* iOS Sheet/Drawer fixes */
+  @supports (-webkit-touch-callout: none) {
+    /* Ensure sheet content respects safe areas */
+    .ios-sheet-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-height: 100vh;
+      max-height: 100dvh;
+    }
+
+    /* Fix sheet header spacing */
+    .ios-sheet-header {
+      flex-shrink: 0;
+    }
+
+    /* Fix sheet footer positioning */
+    .ios-sheet-footer {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    /* Ensure close button is properly positioned */
+    .ios-sheet-close {
+      z-index: 60;
+    }
+
+    /* Fix sheet content scrolling */
+    [data-radix-dialog-content].ios-sheet-content {
+      overflow: hidden;
+    }
+  } /* Closing @supports (-webkit-touch-callout: none) */
 
   /* Animations */
   @keyframes fadeIn {

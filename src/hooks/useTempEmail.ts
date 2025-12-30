@@ -40,7 +40,7 @@ function convertMessage(msg: MailTmMessage | MailTmMessageFull): EmailMessage {
 }
 
 // Create a new email account
-async function createNewAccount(selectedDomain?: string): Promise<MailTmSession | null> {
+async function createNewAccount(selectedDomain?: string, customUsername?: string): Promise<MailTmSession | null> {
   try {
     // Get available domains
     const domains = await mailTmApi.getDomains();
@@ -50,7 +50,8 @@ async function createNewAccount(selectedDomain?: string): Promise<MailTmSession 
 
     // Use selected domain or first available
     const domain = selectedDomain || domains[0].domain;
-    const username = mailTmApi.generateUsername();
+    // Use custom username if provided, otherwise generate random one
+    const username = customUsername || mailTmApi.generateUsername();
     const password = mailTmApi.generatePassword();
     const address = `${username}@${domain}`;
 
@@ -74,9 +75,32 @@ async function createNewAccount(selectedDomain?: string): Promise<MailTmSession 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
 
     return newSession;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create account:', error);
-    return null;
+    // Log additional error details for debugging
+    console.error('Error type:', typeof error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Full error object:', JSON.stringify(error));
+    // Re-throw with a more user-friendly message if it's an API error
+    if (error.message && error.message.includes('API Error')) {
+      const errorMsg = error.message.toLowerCase();
+      // Check for various error codes that indicate the email is already taken
+      if (
+        errorMsg.includes('409') ||
+        errorMsg.includes('422') ||
+        errorMsg.includes('400') ||
+        errorMsg.includes('already exists') ||
+        errorMsg.includes('address already') ||
+        errorMsg.includes('duplicate') ||
+        errorMsg.includes('taken')
+      ) {
+        throw new Error('This email address is already taken. Please try a different username.');
+      }
+      throw new Error('Failed to create email address. Please try again.');
+    }
+    throw error;
   }
 }
 
@@ -121,9 +145,10 @@ export function useTempEmail() {
 
     const init = async () => {
       // Fetch available domains first
+      let domainList: string[] = [];
       try {
         const domains = await mailTmApi.getDomains();
-        const domainList = domains.map(d => d.domain);
+        domainList = domains.map(d => d.domain);
         if (mounted) {
           setAvailableDomains(domainList);
           if (domainList.length > 0 && !selectedDomain) {
@@ -172,8 +197,9 @@ export function useTempEmail() {
         }
       }
 
-      // Create new account
-      const newSession = await createNewAccount();
+      // Create new account with selected domain or first available
+      const domainToUse = selectedDomain || domainList[0];
+      const newSession = await createNewAccount(domainToUse);
 
       if (mounted) {
         if (newSession) {
@@ -210,7 +236,7 @@ export function useTempEmail() {
     return () => clearInterval(interval);
   }, [email]);
 
-  // Generate new email
+  // Generate new email (automatic)
   const generateNewEmail = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -226,20 +252,64 @@ export function useTempEmail() {
 
     localStorage.removeItem(STORAGE_KEY);
 
-    const newSession = await createNewAccount(selectedDomain);
+    try {
+      const newSession = await createNewAccount(selectedDomain);
 
-    if (newSession) {
-      setSession(newSession);
-      setEmail(sessionToEmail(newSession));
-      setMessages([]);
+      if (newSession) {
+        setSession(newSession);
+        setEmail(sessionToEmail(newSession));
+        setMessages([]);
+        setIsLoading(false);
+        toast.success('New email address generated!');
+      } else {
+        setError('Failed to create email. Please try again.');
+        setIsLoading(false);
+        toast.error('Failed to generate new email');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to create email. Please try again.');
       setIsLoading(false);
-      toast.success('New email address generated!');
-    } else {
-      setError('Failed to create email. Please try again.');
-      setIsLoading(false);
-      toast.error('Failed to generate new email');
+      toast.error(err.message || 'Failed to generate new email');
     }
   }, [session, selectedDomain]);
+
+  // Create custom email
+  const createCustomEmail = useCallback(async (username: string, domain: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    // Delete old account if exists
+    if (session) {
+      try {
+        await mailTmApi.deleteAccount(session.token, session.accountId);
+      } catch {
+        // Ignore errors
+      }
+    }
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    try {
+      const newSession = await createNewAccount(domain, username);
+
+      if (newSession) {
+        setSession(newSession);
+        setEmail(sessionToEmail(newSession));
+        setMessages([]);
+        setIsLoading(false);
+        toast.success('Custom email address created!');
+      } else {
+        setError('Failed to create email. Please try again.');
+        setIsLoading(false);
+        toast.error('Failed to create custom email');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to create email. Please try again.');
+      setIsLoading(false);
+      toast.error(err.message || 'Failed to create custom email');
+      throw err; // Re-throw so the dialog can handle it
+    }
+  }, [session]);
 
   // Refresh inbox (manual)
   const refreshInbox = useCallback(async () => {
@@ -332,6 +402,7 @@ export function useTempEmail() {
     timeLeft,
     formattedTimeLeft: formatTimeLeft(timeLeft),
     generateNewEmail,
+    createCustomEmail,
     refreshInbox,
     copyEmail,
     isExpired: timeLeft <= 0,

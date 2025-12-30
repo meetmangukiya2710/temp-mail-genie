@@ -7,13 +7,16 @@
         "refresh": "Refresh",
         "loading": "Loading...",
         "new_email": "New Email",
-        "try_again": "Try Again"
+        "try_again": "Try Again",
+        "cancel": "Cancel"
     },
     "nav": {
         "home": "Home",
         "settings": "Settings",
         "privacy": "Privacy Policy",
-        "terms": "Terms of Service"
+        "terms": "Terms of Service",
+        "mail": "Mail",
+        "articles": "Articles & Guides"
     },
     "hero": {
         "title_main": "Temporary Email for",
@@ -25,7 +28,24 @@
         "copy_email": "Copy Email",
         "remaining": "remaining",
         "expired": "Expired",
-        "creating": "Creating your email..."
+        "creating": "Creating your email...",
+        "custom": {
+            "title": "Create Custom Email",
+            "description": "Choose your own username and domain to create a personalized temporary email address.",
+            "username_label": "Email Username",
+            "username_placeholder": "myemail",
+            "username_hint": "3-32 characters, lowercase letters, numbers, dots, dashes, and underscores only",
+            "username_required": "Username is required",
+            "username_too_short": "Username must be at least {{min}} characters",
+            "username_too_long": "Username must be no more than {{max}} characters",
+            "username_invalid": "Username can only contain lowercase letters, numbers, dots, dashes, and underscores",
+            "domain_required": "Please select a domain",
+            "domain_placeholder": "Select domain",
+            "preview": "Preview",
+            "create_button": "Create Email",
+            "create_custom": "Custom Email",
+            "create_failed": "Failed to create custom email. Please try again."
+        }
     },
     "inbox": {
         "title": "Inbox",
@@ -84,6 +104,17 @@
         "language_desc": "Select your preferred language",
         "auto_detect": "Auto-detect",
         "legal": "Legal",
-        "app_version": "Version"
+        "app_version": "Version",
+        "notifications": "Notifications",
+        "email_notifications": "Email Notifications",
+        "email_notifications_desc": "Get notified when new email arrives",
+        "coming_soon": "Coming soon in premium version",
+        "articles": "Articles & Guides"
+    },
+    "cookie_consent": {
+        "title": "We value your privacy",
+        "message": "We use cookies to enhance your browsing experience, serve personalized ads, and analyze our traffic. By clicking \"Accept\", you consent to our use of cookies.",
+        "button_accept": "Accept",
+        "button_necessary": "Necessary Only"
     }
 }

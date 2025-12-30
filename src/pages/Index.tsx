@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Header } from '@/components/layout/Header';
 import { EmailDisplay } from '@/components/email/EmailDisplay';
 import { InboxList } from '@/components/email/InboxList';
@@ -9,11 +10,10 @@ import { AppAd } from '@/components/ads/AppAd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-// Lazy load below-the-fold components
-const HowItWorks = lazy(() => import('@/components/content/HowItWorks').then(m => ({ default: m.HowItWorks })));
-const FAQ = lazy(() => import('@/components/content/FAQ').then(m => ({ default: m.FAQ })));
-const AboutSection = lazy(() => import('@/components/content/AboutSection').then(m => ({ default: m.AboutSection })));
-const EmailDetail = lazy(() => import('@/components/email/EmailDetail').then(m => ({ default: m.EmailDetail })));
+import { HowItWorks } from '@/components/content/HowItWorks';
+import { FAQ } from '@/components/content/FAQ';
+import { AboutSection } from '@/components/content/AboutSection';
+import { EmailDetail } from '@/components/email/EmailDetail';
 
 export default function Index() {
   const { t } = useTranslation();
@@ -25,6 +25,7 @@ export default function Index() {
     formattedTimeLeft,
     isExpired,
     generateNewEmail,
+    createCustomEmail,
     refreshInbox,
     copyEmail,
     availableDomains,
@@ -34,6 +35,9 @@ export default function Index() {
   } = useTempEmail();
 
   const [selectedMessage, setSelectedMessage] = useState<EmailMessage | null>(null);
+
+  const isIOS = Capacitor.getPlatform() === 'ios';
+  const isAndroid = Capacitor.getPlatform() === 'android';
 
   // Show error state if email creation failed
   if (error && !email) {
@@ -52,58 +56,44 @@ export default function Index() {
     );
   }
 
-  // Show loading if email not ready yet
-  if (!email) {
-    return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground">{t('email.creating')}</p>
-        </div>
-      </div>
-    );
-  }
+  // Show loading skeleton but keep structure
+  const isLoadingState = !email;
 
   return (
-    <div className="min-h-screen gradient-hero">
+    <div className="min-h-screen gradient-hero" style={{
+      WebkitOverflowScrolling: 'touch',
+    }}>
       <Header />
 
-      <div className="flex justify-center items-start gap-6 px-4 py-6 sm:py-10">
-        {/* Left Sidebar Ad */}
-        <AppAd type="sidebar-left" />
-
-        <main className="flex-1 max-w-2xl min-w-0">
+      <div className={`flex justify-center items-start gap-6 px-4 py-6 sm:py-10 ${isIOS ? 'ios-content-wrapper' : isAndroid ? 'android-content-area' : ''}`}>
+        <main className="flex-1 max-w-2xl min-w-0 px-2 sm:px-0">
           {/* Hero section */}
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">
-              {t('hero.title_main')}{' '}
-              <span className="text-gradient">{t('hero.title_accent')}</span>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight leading-tight px-4 sm:px-0">
+              <span className="whitespace-nowrap">{t('hero.title_main')}</span>{' '}
+              <span className="text-gradient android-text-fallback ios-text-safe whitespace-nowrap">{t('hero.title_accent')}</span>
             </h1>
-            <p className="text-muted-foreground max-w-md mx-auto">
+            <p className="text-muted-foreground max-w-md mx-auto px-4 sm:px-0">
               {t('hero.subtitle')}
             </p>
           </div>
 
-          {/* Inline Ad 1 */}
-          <AppAd type="inline" />
 
           {/* Email display */}
           <div className="mb-6">
             <EmailDisplay
-              email={email.address}
+              email={email?.address || ''}
               timeLeft={formattedTimeLeft}
               isExpired={isExpired}
               onCopy={copyEmail}
               onGenerate={generateNewEmail}
-              isLoading={isLoading}
+              onCreateCustom={createCustomEmail}
+              isLoading={isLoading || isLoadingState}
               availableDomains={availableDomains}
               selectedDomain={selectedDomain}
               onDomainChange={setSelectedDomain}
             />
           </div>
-
-          {/* Inline Ad 2 */}
-          <AppAd type="inline" />
 
           {/* Inbox or Email Detail */}
           <Suspense fallback={<div className="h-60 animate-pulse bg-muted/20 rounded-xl" />}>
@@ -116,15 +106,13 @@ export default function Index() {
             ) : (
               <InboxList
                 messages={messages}
-                isLoading={isLoading}
+                isLoading={isLoading || isLoadingState}
                 onRefresh={refreshInbox}
                 onSelectMessage={setSelectedMessage}
                 selectedId={selectedMessage?.id}
               />
             )}
           </Suspense>
-
-          <AppAd type="inline" />
 
           {/* Features */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
@@ -148,24 +136,16 @@ export default function Index() {
           </div>
 
           {/* Inline Ad 3 */}
-          <AppAd type="inline" />
+          {/* <AppAd type="inline" /> */}
 
           {/* New Content Sections */}
-          <Suspense fallback={<div className="h-40 animate-pulse bg-muted/20 rounded-xl" />}>
-            <div className="mt-16 space-y-16">
-              <HowItWorks />
-              <AboutSection />
-              <FAQ />
-            </div>
-          </Suspense>
+          <div className="mt-16 space-y-16">
+            <HowItWorks />
+            <AboutSection />
+            <FAQ />
+          </div>
         </main>
-
-        {/* Right Sidebar Ad */}
-        <AppAd type="sidebar-right" />
       </div>
-
-      {/* Persistent Banner Ad (Web Only) */}
-      <AppAd type="banner" />
 
       {/* Footer */}
       <footer className="border-t mt-20 bg-card/30">
@@ -178,6 +158,9 @@ export default function Index() {
               </p>
             </div>
             <div className="flex flex-wrap gap-6 md:justify-end text-sm">
+              <Link to="/about" className="hover:text-primary transition-colors">About Us</Link>
+              <Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link>
+              <Link to="/articles" className="hover:text-primary transition-colors">Articles</Link>
               <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
               <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
             </div>
