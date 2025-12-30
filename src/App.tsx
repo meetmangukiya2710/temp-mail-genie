@@ -14,6 +14,7 @@ import ArticleDetail from "./pages/ArticleDetail";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import { CookieConsent } from "./components/content/CookieConsent";
+import { AutoAdSense } from "./components/ads/AutoAdSense";
 import { Capacitor } from '@capacitor/core';
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => {
           <Sonner position="top-center" />
           <CookieConsent />
           <BrowserRouter>
+            <AutoAdSense />
             <div className={isMobile ? "pb-16 pt-safe-top" : "pt-web-header"}>
               <Routes>
                 <Route path="/" element={<Index />} />

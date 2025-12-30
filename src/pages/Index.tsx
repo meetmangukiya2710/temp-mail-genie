@@ -6,7 +6,6 @@ import { InboxList } from '@/components/email/InboxList';
 import { useTempEmail } from '@/hooks/useTempEmail';
 import { EmailMessage } from '@/types/email';
 import { Shield, Zap, Clock, Trash2 } from 'lucide-react';
-import { AppAd } from '@/components/ads/AppAd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -135,8 +134,7 @@ export default function Index() {
             ))}
           </div>
 
-          {/* Inline Ad 3 */}
-          {/* <AppAd type="inline" /> */}
+
 
           {/* New Content Sections */}
           <div className="mt-16 space-y-16">

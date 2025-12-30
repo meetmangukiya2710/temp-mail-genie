@@ -4,29 +4,33 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 20% 10%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 173 80% 40%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand Colors - Light Mode */
+    --primary: 244 75% 59%;
+    /* #4F46E5 */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 20% 94%;
-    --secondary-foreground: 220 20% 20%;
+    --secondary: 189 94% 43%;
+    /* #06B6D4 */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 220 10% 40%;
+    --accent: 258 90% 66%;
+    /* #8B5CF6 */
+    --accent-foreground: 210 40% 98%;
 
-    --accent: 173 80% 95%;
-    --accent-foreground: 173 80% 30%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
@@ -34,54 +38,64 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 173 80% 40%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 244 75% 59%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 210 20% 98%;
-    --sidebar-foreground: 220 20% 10%;
-    --sidebar-primary: 173 80% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 173 80% 95%;
-    --sidebar-accent-foreground: 173 80% 30%;
-    --sidebar-border: 210 20% 90%;
-    --sidebar-ring: 173 80% 40%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 244 75% 59%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 258 90% 66%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 244 75% 59%;
 
     /* Custom tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(173, 80%, 40%) 0%, hsl(190, 80%, 45%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(173, 40%, 96%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(210, 20%, 99%) 100%);
-    --shadow-soft: 0 4px 20px -4px hsl(220 20% 10% / 0.08);
-    --shadow-glow: 0 0 30px hsl(173 80% 40% / 0.15);
-    --shadow-card: 0 2px 12px -2px hsl(220 20% 10% / 0.06);
-  } /* Closing :root */
+    --gradient-primary: linear-gradient(135deg, hsl(222, 80%, 58%) 0%, hsl(250, 70%, 65%) 100%);
+    --gradient-cyan: linear-gradient(135deg, hsl(189, 94%, 43%) 0%, hsl(173, 80%, 40%) 100%);
+    /* Cyan -> Teal */
+    --gradient-purple: linear-gradient(135deg, hsl(258, 90%, 66%) 0%, hsl(244, 75%, 59%) 100%);
+    /* Purple -> Indigo */
+
+    --gradient-hero: linear-gradient(180deg, hsl(210, 40%, 98%) 0%, hsl(244, 75%, 97%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(244, 75%, 99%) 100%);
+    --shadow-soft: 0 4px 20px -4px hsl(222 47% 11% / 0.08);
+    --shadow-glow: 0 0 30px hsl(244 75% 59% / 0.15);
+    --shadow-card: 0 2px 12px -2px hsl(222 47% 11% / 0.06);
+  }
+
+  /* Closing :root */
 
   .dark {
-    --background: 220 25% 6%;
-    --foreground: 210 20% 98%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
 
-    --card: 220 25% 9%;
-    --card-foreground: 210 20% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 220 25% 9%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 173 80% 45%;
-    --primary-foreground: 220 25% 6%;
+    /* Brand Colors - Dark Mode */
+    --primary: 244 75% 65%;
+    /* Slightly lighter for dark mode */
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 220 20% 14%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 189 70% 50%;
+    /* Adjustment for dark mode visibility */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 20% 12%;
-    --muted-foreground: 210 15% 65%;
+    --accent: 258 70% 70%;
+    --accent-foreground: 222 47% 11%;
 
-    --accent: 173 50% 15%;
-    --accent-foreground: 173 80% 60%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
     --success: 160 84% 39%;
     --success-foreground: 0 0% 100%;
@@ -89,27 +103,33 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 20% 15%;
-    --input: 220 20% 15%;
-    --ring: 173 80% 45%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 244 75% 65%;
 
-    --sidebar-background: 220 25% 8%;
-    --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 173 80% 45%;
-    --sidebar-primary-foreground: 220 25% 6%;
-    --sidebar-accent: 173 50% 15%;
-    --sidebar-accent-foreground: 173 80% 60%;
-    --sidebar-border: 220 20% 15%;
-    --sidebar-ring: 173 80% 45%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 244 75% 65%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 258 70% 70%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 244 75% 65%;
 
     /* Custom tokens dark */
-    --gradient-primary: linear-gradient(135deg, hsl(173, 80%, 45%) 0%, hsl(190, 80%, 50%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(220, 25%, 6%) 0%, hsl(220, 30%, 8%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(220, 25%, 10%) 0%, hsl(220, 25%, 8%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(222, 80%, 62%) 0%, hsl(250, 70%, 68%) 100%);
+    /* Slightly lighter Blue -> Indigo for Dark Mode */
+    --gradient-cyan: linear-gradient(135deg, hsl(189, 70%, 50%) 0%, hsl(173, 80%, 45%) 100%);
+    --gradient-purple: linear-gradient(135deg, hsl(258, 70%, 70%) 0%, hsl(244, 75%, 65%) 100%);
+
+    --gradient-hero: linear-gradient(180deg, hsl(222, 47%, 11%) 0%, hsl(244, 30%, 15%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(222, 47%, 13%) 0%, hsl(222, 47%, 11%) 100%);
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 40px hsl(173 80% 45% / 0.2);
+    --shadow-glow: 0 0 40px hsl(244 75% 65% / 0.2);
     --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.3);
-  } /* Closing .dark */
+  }
+
+  /* Closing .dark */
 
   * {
     @apply border-border;
@@ -155,94 +175,105 @@
     display: flex;
     flex-direction: column;
   }
- /* Closing @layer base */
 
-@layer utilities {
+  /* Closing @layer base */
 
-  .gradient-primary {
-    background: var(--gradient-primary);
-  }
+  @layer utilities {
 
-  .gradient-hero {
-    background: var(--gradient-hero);
-  }
-
-  .gradient-card {
-    background: var(--gradient-card);
-  }
-
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
-  }
-
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-
-  .pt-safe-top {
-    padding-top: env(safe-area-inset-top);
-  }
-  .pt-web-header {
-    padding-top: 4rem;
-  }
-
-  .text-gradient {
-    /* Set fallback color first - ensures text is visible on all platforms */
-    color: hsl(173, 80%, 45%);
-    /* Force text rendering */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* Apply gradient effect only on platforms that support it reliably */
-  @supports (background-clip: text) and (not (-webkit-touch-callout: none)) {
-    /* Non-iOS platforms that support background-clip: text */
-    .text-gradient {
+    .gradient-primary {
       background: var(--gradient-primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
-  }
 
-  /* Universal text visibility fix - highest priority */
-  h1 span {
-    /* Ensure all title spans are visible */
-    display: inline !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
+    .gradient-hero {
+      background: var(--gradient-hero);
+    }
 
-  /* Prevent text wrapping issues on mobile */
-  h1 {
-    /* Ensure title doesn't wrap awkwardly on small screens */
-    word-break: keep-all;
-    overflow-wrap: normal;
-    hyphens: none;
-    /* Ensure text is never hidden */
-    -webkit-text-fill-color: initial;
-    color: inherit;
-  }
+    .gradient-card {
+      background: var(--gradient-card);
+    }
 
-  /* Allow controlled wrapping for very small screens */
-  @media (max-width: 380px) {
+    .gradient-cyan {
+      background: var(--gradient-cyan);
+    }
+
+    .gradient-purple {
+      background: var(--gradient-purple);
+    }
+
+    .shadow-soft {
+      box-shadow: var(--shadow-soft);
+    }
+
+    .shadow-glow {
+      box-shadow: var(--shadow-glow);
+    }
+
+    .shadow-card {
+      box-shadow: var(--shadow-card);
+    }
+
+    .pt-safe-top {
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .pt-web-header {
+      padding-top: 4rem;
+    }
+
+    .text-gradient {
+      /* Set fallback color first - ensures text is visible on all platforms */
+      color: hsl(173, 80%, 45%);
+      /* Force text rendering */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Apply gradient effect only on platforms that support it reliably */
+    @supports (background-clip: text) and (not (-webkit-touch-callout: none)) {
+
+      /* Non-iOS platforms that support background-clip: text */
+      .text-gradient {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    /* Universal text visibility fix - highest priority */
+    h1 span {
+      /* Ensure all title spans are visible */
+      display: inline !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    /* Prevent text wrapping issues on mobile */
     h1 {
-      word-break: normal;
-      overflow-wrap: break-word;
+      /* Ensure title doesn't wrap awkwardly on small screens */
+      word-break: keep-all;
+      overflow-wrap: normal;
+      hyphens: none;
+      /* Ensure text is never hidden */
+      -webkit-text-fill-color: initial;
+      color: inherit;
     }
-  }
 
-  /* iOS-specific text safety class */
-  .ios-text-safe {
-    /* Ensure text is always visible on iOS */
-    display: inline !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
+    /* Allow controlled wrapping for very small screens */
+    @media (max-width: 380px) {
+      h1 {
+        word-break: normal;
+        overflow-wrap: break-word;
+      }
+    }
+
+    /* iOS-specific text safety class */
+    .ios-text-safe {
+      /* Ensure text is always visible on iOS */
+      display: inline !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
 
     .ios-text-safe {
       /* Additional iOS-specific fixes */
@@ -281,6 +312,7 @@
 
   /* iOS fixed header - use fixed instead of sticky for better iOS WebView support */
   @supports (-webkit-touch-callout: none) {
+
     /* iOS Safari/WebView specific fixes - use fixed positioning */
     header.ios-sticky-header,
     header[class*="sticky"] {
@@ -371,6 +403,7 @@
 
   /* iOS Sheet/Drawer fixes */
   @supports (-webkit-touch-callout: none) {
+
     /* Ensure sheet content respects safe areas */
     .ios-sheet-content {
       display: flex;
@@ -400,7 +433,9 @@
     [data-radix-dialog-content].ios-sheet-content {
       overflow: hidden;
     }
-  } /* Closing @supports (-webkit-touch-callout: none) */
+  }
+
+  /* Closing @supports (-webkit-touch-callout: none) */
 
   /* Animations */
   @keyframes fadeIn {

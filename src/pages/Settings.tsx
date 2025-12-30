@@ -21,7 +21,7 @@ import {
   Languages
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { AppAd } from '@/components/ads/AppAd';
+
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -224,7 +224,7 @@ export default function Settings() {
         </div>
       </main>
 
-      {/* <AppAd type="banner" /> */}
+
 
     </div>
   );

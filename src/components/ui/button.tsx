@@ -17,6 +17,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         glass: "glass hover:bg-card/90 text-foreground",
         success: "bg-success text-success-foreground hover:bg-success/90",
+        cyan: "gradient-cyan text-primary-foreground shadow-soft hover:shadow-glow hover:brightness-110",
+        purple: "gradient-purple text-primary-foreground shadow-soft hover:shadow-glow hover:brightness-110",
       },
       size: {
         default: "h-11 px-5 py-2",
@@ -35,7 +37,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 

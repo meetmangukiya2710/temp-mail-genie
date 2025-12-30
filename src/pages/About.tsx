@@ -1,7 +1,7 @@
 import { Header } from '@/components/layout/Header';
 import { Link } from 'react-router-dom';
 import { Shield, Zap, Lock, Users, Target, Heart, ArrowLeft } from 'lucide-react';
-import { AppAd } from '@/components/ads/AppAd';
+
 import { useEffect } from 'react';
 
 export default function About() {
@@ -230,9 +230,7 @@ export default function About() {
                     </div>
                 </article>
 
-                <div className="mt-12">
-                    <AppAd type="inline" />
-                </div>
+
             </main>
         </div>
     );

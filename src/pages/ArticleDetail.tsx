@@ -2,7 +2,7 @@ import { Header } from '@/components/layout/Header';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { articles } from '@/data/articles';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
-import { AppAd } from '@/components/ads/AppAd';
+
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
@@ -61,10 +61,7 @@ export default function ArticleDetail() {
                     />
                 </article>
 
-                {/* AdSense compliant ad placement - only on content-rich article pages */}
-                <div className="mt-12">
-                    <AppAd type="inline" />
-                </div>
+
             </main>
         </div>
     );

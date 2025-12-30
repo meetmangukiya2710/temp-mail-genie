@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { articles } from '@/data/articles';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
-import { AppAd } from '@/components/ads/AppAd';
 import { useEffect } from 'react';
 
 export default function Articles() {
@@ -55,9 +54,7 @@ export default function Articles() {
                     ))}
                 </div>
 
-                <div className="mt-12">
-                    <AppAd type="inline" />
-                </div>
+
             </div>
         </div>
     );

@@ -106,7 +106,7 @@ export function EmailDisplay({
             <Button
               onClick={handleCopy}
               className="flex-1 sm:flex-none gap-2"
-              variant="secondary"
+              variant="cyan"
             >
               <Copy size={18} />
               {t('email.copy_email')}
@@ -115,7 +115,7 @@ export function EmailDisplay({
               <Button
                 onClick={() => setShowCustomDialog(true)}
                 className="flex-1 sm:flex-none gap-2"
-                variant="outline"
+                variant="purple"
                 disabled={isLoading}
               >
                 <Edit size={18} />

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Colors - Dark Mode -->
+    <color name="colorPrimary">#6366F1</color> <!-- Lighter for dark mode -->
+    <color name="colorPrimaryDark">#4F46E5</color>
+    <color name="colorAccent">#A78BFA</color>
+    <color name="colorSecondary">#22D3EE</color>
+
+    <color name="ic_launcher_background">#1F2937</color> <!-- Dark background for icon/splash -->
+</resources>

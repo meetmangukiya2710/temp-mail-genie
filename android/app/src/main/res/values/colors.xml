@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Colors - Light Mode -->
+    <color name="colorPrimary">#4F46E5</color>
+    <color name="colorPrimaryDark">#4338CA</color> <!-- Slightly darker shade for status bar -->
+    <color name="colorAccent">#8B5CF6</color>
+    <color name="colorSecondary">#06B6D4</color>
+
+    <color name="ic_launcher_background">#FFFFFF</color>
+</resources>

@@ -28,8 +28,21 @@ export function useAdPage(): AdPageConfig {
     const pathname = location.pathname;
 
     const config = useMemo((): AdPageConfig => {
-        // Article detail pages - allow ads if substantial content
-        if (pathname.startsWith('/articles/')) {
+        // Administrative pages - NO ADS
+        if (pathname === '/settings') {
+            return {
+                allowAds: false,
+                recommendedPositions: [],
+                maxAdsPerPage: 0,
+            };
+        }
+
+        // Content pages and Home page - ALLOW ADS
+        // This includes: /, /about, /faq, /articles, /articles/:id, /privacy-policy, /terms-of-service
+        const contentPaths = ['/', '/about', '/faq', '/articles', '/privacy-policy', '/terms-of-service'];
+        const isContentPage = contentPaths.includes(pathname) || pathname.startsWith('/articles/');
+
+        if (isContentPage) {
             return {
                 allowAds: true,
                 recommendedPositions: ['inline'],
@@ -37,34 +50,7 @@ export function useAdPage(): AdPageConfig {
             };
         }
 
-        // Articles listing page - allow one ad
-        if (pathname === '/articles') {
-            return {
-                allowAds: true,
-                recommendedPositions: ['inline'],
-                maxAdsPerPage: 1,
-            };
-        }
-
-        // About Us page - allow ads
-        if (pathname === '/about') {
-            return {
-                allowAds: true,
-                recommendedPositions: ['inline'],
-                maxAdsPerPage: 1,
-            };
-        }
-
-        // FAQ page - allow ads
-        if (pathname === '/faq') {
-            return {
-                allowAds: true,
-                recommendedPositions: ['inline'],
-                maxAdsPerPage: 1,
-            };
-        }
-
-        // All other pages - NO ADS (homepage, settings, privacy, terms, etc.)
+        // Default: No ads for unknown pages or specific utility states
         return {
             allowAds: false,
             recommendedPositions: [],

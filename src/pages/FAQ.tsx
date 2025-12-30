@@ -1,7 +1,7 @@
 import { Header } from '@/components/layout/Header';
 import { Link } from 'react-router-dom';
 import { HelpCircle, ArrowLeft } from 'lucide-react';
-import { AppAd } from '@/components/ads/AppAd';
+
 import { useEffect } from 'react';
 import {
     Accordion,
@@ -167,9 +167,7 @@ export default function FAQ() {
                     </div>
                 </div>
 
-                <div className="mt-12">
-                    <AppAd type="inline" />
-                </div>
+
             </main>
         </div>
     );
